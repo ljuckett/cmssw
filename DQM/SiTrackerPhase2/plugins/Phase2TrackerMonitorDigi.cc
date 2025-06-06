@@ -605,8 +605,12 @@ void Phase2TrackerMonitorDigi::bookLayerHistos(DQMStore::IBooker& ibooker, unsig
                                                           Parameters.getParameter<double>("xmax"),
                                                           "");
 
-      Parameters = config_.getParameter<edm::ParameterSet>("PositionOfDigisSH");
-      HistoName.str("");
+      // choose the correct PSet by module type
+      if (isPtypeSensor) {
+        Parameters = config_.getParameter<edm::ParameterSet>("PositionOfDigisSHPS");
+    } else {
+        Parameters = config_.getParameter<edm::ParameterSet>("PositionOfDigisSH2S");
+    } HistoName.str("");
       HistoName << "PositionOfDigisS";
       if (Parameters.getParameter<bool>("switch"))
         local_mes.PositionOfDigisS = ibooker.book2D(HistoName.str(),
