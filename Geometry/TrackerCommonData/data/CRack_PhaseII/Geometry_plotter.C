@@ -1,6 +1,9 @@
 
-//SIMPLE SCRIPT for geometry plotting and debugging.
+//SIMPLE SCRIPT for geometry plotting and debugging. 
 void Geometry_plotter() {
+
+ 
+>>>>>>> d5f2d2785dd (clean working geometry)
   TGeoManager::Import("cmsSimGeom-Run4D500_validation.root");
 
   gGeoManager->GetListOfVolumes()->Print();
@@ -34,6 +37,7 @@ void Geometry_plotter() {
 
       if (colorIndex > 50)
         colorIndex = 2;
+
     }
     /*if(matName == "materials:Air") {
        daughterVol->SetTransparency(100);

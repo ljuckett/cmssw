@@ -1,6 +1,7 @@
 # CRACK for PhaseII:
 
 ## Geometry generation
+<<<<<<< HEAD
 
 This section provides complete instructions for creating the CRACK geometry.
 If you only wish to use the geometry without generating it, please skip to the next section.
@@ -37,6 +38,7 @@ LD_PRELOAD="/lib64/libLLVM-17.so"
 cmsShow --sim-geom-file cmsSimGeom-Run4D500.root -c Fireworks/Core/macros/simGeo.fwc
 ```
 
+
 ### ROOT (both Linux and macOS:)
 Alternatively, use a ROOT macro to visualize the geometry. This method works on both Linux and macOS. On macOS, run the macro locally (not via ssh to lxplus) to avoid X11 forwarding issues.
 
@@ -46,6 +48,17 @@ Alternatively, use a ROOT macro to visualize the geometry. This method works on 
 
 ## Gen-Sim step 
 
+To run the cosmic rays Gen-Sim step for the CRACK, run the following command:
+
+```
+cmsRun myTrackerOnly_cfg.py
+```
+
+This will create a step1.root file. To analyse the hits in the root file, you can use the [SimHitAnalyzer](https://github.com/hayfasfar/SimHitAnalyzer/tree/master/SimHitAnalyzer).
+
+
+
+## Run the workflow  (Not Needed.)
 500 is the new detector version for the standelone CRACK. The following step creates available workflows for D500 sush as a simple the GEN-SIM step
 
 The new Geometry is integrated in the full matrix, and several new workflow made available. a workflow is a set of GEN-SIM-RECO etc steps with different configurations. For further details on this step please refer to this presentation [here](https://indico.cern.ch/event/1296370/contributions/5449497/attachments/2664526/4616810/TkGeom_handover_AdeWit.pdf)
