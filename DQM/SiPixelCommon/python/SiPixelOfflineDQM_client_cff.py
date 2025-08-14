@@ -16,7 +16,7 @@ sipixelEDAClient = DQMEDHarvester("SiPixelEDAClient",
     UseOfflineXMLFile = cms.untracked.bool(True),
     Tier0Flag = cms.untracked.bool(True),
     DoHitEfficiency = cms.untracked.bool(True),
-    isUpgrade = cms.untracked.bool(False)
+    upgradePhase = cms.untracked.int32(0)
 )
 
 #QualityTester

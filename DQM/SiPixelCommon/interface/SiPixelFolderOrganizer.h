@@ -38,9 +38,9 @@ public:
   /// Set folder name for a module or plaquette
   // type is: BPIX  mod=0, lad=1, lay=2, phi=3,
   //         FPIX  mod=0, blade=4, disc=5, ring=6
-  bool setModuleFolder(const uint32_t &rawdetid = 0, int type = 0, bool isUpgrade = false);
-  bool setModuleFolder(DQMStore::IBooker &, const uint32_t &rawdetid = 0, int type = 0, bool isUpgrade = false);
-  void getModuleFolder(const uint32_t &rawdetid, std::string &path, bool isUpgrade);
+  bool setModuleFolder(const uint32_t &rawdetid = 0, int type = 0, int upgradePhase = 0);
+  bool setModuleFolder(DQMStore::IBooker &, const uint32_t &rawdetid = 0, int type = 0, int upgradePhase = 0);
+  void getModuleFolder(const uint32_t &rawdetid, std::string &path, int upgradePhase);
 
   /// Set folder name for a FED (used in the case of errors without detId)
   bool setFedFolder(const uint32_t FedId);
