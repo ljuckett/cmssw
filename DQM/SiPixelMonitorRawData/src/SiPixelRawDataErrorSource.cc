@@ -60,7 +60,7 @@ SiPixelRawDataErrorSource::SiPixelRawDataErrorSource(const edm::ParameterSet &iC
       modOn(conf_.getUntrackedParameter<bool>("modOn", true)),
       ladOn(conf_.getUntrackedParameter<bool>("ladOn", false)),
       bladeOn(conf_.getUntrackedParameter<bool>("bladeOn", false)),
-      isUpgrade(conf_.getUntrackedParameter<bool>("isUpgrade", false)) {
+      upgradePhase(conf_.getUntrackedParameter<int>("upgradePhase", 0)) {
   firstRun = true;
   LogInfo("PixelDQM") << "SiPixelRawDataErrorSource::SiPixelRawDataErrorSource:"
                          " Got DQM BackEnd interface"
@@ -272,7 +272,7 @@ void SiPixelRawDataErrorSource::bookMEs(DQMStore::IBooker &iBooker) {
     /// Create folder tree and book histograms
 
     if (modOn) {
-      if (!theSiPixelFolder.setModuleFolder(iBooker, (*struct_iter).first, 0, isUpgrade)) {
+      if (!theSiPixelFolder.setModuleFolder(iBooker, (*struct_iter).first, 0, upgradePhase)) {
         // std::cout<<"PIB! not booking histograms for non-PIB
         // modules!"<<std::endl;
         if (!isPIB)
@@ -282,13 +282,13 @@ void SiPixelRawDataErrorSource::bookMEs(DQMStore::IBooker &iBooker) {
     }
 
     if (ladOn) {
-      if (!theSiPixelFolder.setModuleFolder(iBooker, (*struct_iter).first, 1, isUpgrade)) {
+      if (!theSiPixelFolder.setModuleFolder(iBooker, (*struct_iter).first, 1, upgradePhase)) {
         LogDebug("PixelDQM") << "PROBLEM WITH LADDER-FOLDER\n";
       }
     }
 
     if (bladeOn) {
-      if (!theSiPixelFolder.setModuleFolder(iBooker, (*struct_iter).first, 4, isUpgrade)) {
+      if (!theSiPixelFolder.setModuleFolder(iBooker, (*struct_iter).first, 4, upgradePhase)) {
         LogDebug("PixelDQM") << "PROBLEM WITH BLADE-FOLDER\n";
       }
     }

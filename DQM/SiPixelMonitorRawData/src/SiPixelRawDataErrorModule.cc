@@ -83,7 +83,7 @@ SiPixelRawDataErrorModule::~SiPixelRawDataErrorModule() {}
 void SiPixelRawDataErrorModule::book(const edm::ParameterSet &iConfig,
                                      DQMStore::IBooker &iBooker,
                                      int type,
-                                     bool isUpgrade) {}
+                                     int upgradePhase) {}
 //
 // Fill histograms
 //

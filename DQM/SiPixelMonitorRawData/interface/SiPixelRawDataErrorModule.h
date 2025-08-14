@@ -43,7 +43,7 @@ public:
   typedef edm::DetSet<SiPixelRawDataError>::const_iterator ErrorIterator;
 
   /// Book histograms
-  void book(const edm::ParameterSet &iConfig, DQMStore::IBooker &, int type = 0, bool isUpgrade = false);
+  void book(const edm::ParameterSet &iConfig, DQMStore::IBooker &, int type = 0, int upgradePhase = 0);
   /// Fill histograms
   int fill(const edm::DetSetVector<SiPixelRawDataError> &input,
            std::map<std::string, MonitorElement **> *meMapFEDs,
