@@ -69,7 +69,7 @@ SiPixelEDAClient::SiPixelEDAClient(const edm::ParameterSet &ps) {
   Tier0Flag_ = ps.getUntrackedParameter<bool>("Tier0Flag", false);                              // client
   doHitEfficiency_ = ps.getUntrackedParameter<bool>("DoHitEfficiency", true);                   // client
   inputSource_ = ps.getUntrackedParameter<string>("inputSource", "source");
-  isUpgrade_ = ps.getUntrackedParameter<bool>("isUpgrade", false);  // client
+  upgradePhase_ = ps.getUntrackedParameter<int>("upgradePhase", 0);  // client
 
   if (!Tier0Flag_) {
     string localPath = string("DQM/SiPixelMonitorClient/test/loader.html");
@@ -174,7 +174,7 @@ void SiPixelEDAClient::dqmEndLuminosityBlock(DQMStore::IBooker &iBooker,
   }
 
   /// std::cout << "CREATING SUMMARY" << std::endl;
-  sipixelActionExecutor_->createSummary(iBooker, iGetter, isUpgrade_);
+  sipixelActionExecutor_->createSummary(iBooker, iGetter, upgradePhase_);
 
   if (firstLumi) {
     iBooker.setCurrentFolder("Pixel/");
@@ -184,10 +184,10 @@ void SiPixelEDAClient::dqmEndLuminosityBlock(DQMStore::IBooker &iBooker,
     // sipixelActionExecutor_->createSummary(iBooker,iGetter, isUpgrade_);
     // Booking Deviation Histos:
     if (!Tier0Flag_)
-      sipixelActionExecutor_->bookDeviations(iBooker, isUpgrade_);
+      sipixelActionExecutor_->bookDeviations(iBooker, upgradePhase_);
     // Booking Efficiency Histos:
     if (doHitEfficiency_)
-      sipixelActionExecutor_->bookEfficiency(iBooker, isUpgrade_);
+      sipixelActionExecutor_->bookEfficiency(iBooker, upgradePhase_);
     // Creating occupancy plots:
     sipixelActionExecutor_->bookOccupancyPlots(iBooker, iGetter, hiRes_);
     // Booking noisy pixel ME's:
@@ -227,7 +227,7 @@ void SiPixelEDAClient::dqmEndLuminosityBlock(DQMStore::IBooker &iBooker,
   bool init = true;
   if (actionOnLumiSec_ && nLumiSecs_ % 1 == 0) {
     if (doHitEfficiency_)
-      sipixelActionExecutor_->createEfficiency(iBooker, iGetter, isUpgrade_);
+      sipixelActionExecutor_->createEfficiency(iBooker, iGetter, upgradePhase_);
     sipixelActionExecutor_->createOccupancy(iBooker, iGetter);
     iBooker.cd();
     iGetter.cd();
@@ -252,13 +252,13 @@ void SiPixelEDAClient::dqmEndJob(DQMStore::IBooker &iBooker, DQMStore::IGetter &
   //  cout<<"In SiPixelEDAClient::endJob "<<endl;
   edm::LogInfo("SiPixelEDAClient") << "[SiPixelEDAClient]: endjob called!";
   /// cout << "[SiPixelEDAClient]: endjob called!" << endl;
-  sipixelActionExecutor_->createSummary(iBooker, iGetter, isUpgrade_);
+  sipixelActionExecutor_->createSummary(iBooker, iGetter, upgradePhase_);
 
   if (actionOnRunEnd_) {
     // sipixelActionExecutor_->createSummary(iBooker, iGetter, isUpgrade_);
 
     if (doHitEfficiency_) {
-      sipixelActionExecutor_->createEfficiency(iBooker, iGetter, isUpgrade_);
+      sipixelActionExecutor_->createEfficiency(iBooker, iGetter, upgradePhase_);
       sipixelActionExecutor_->fillEfficiencySummary(iBooker, iGetter);
     }
 

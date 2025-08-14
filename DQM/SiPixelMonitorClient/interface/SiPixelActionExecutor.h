@@ -49,11 +49,11 @@ public:
   SiPixelActionExecutor(bool offlineXMLfile, bool Tier0Flag);
   ~SiPixelActionExecutor();
 
-  void createSummary(DQMStore::IBooker &iBooker, DQMStore::IGetter &iGetter, bool isUpgrade);
-  void bookDeviations(DQMStore::IBooker &iBooker, bool isUpgrade);
-  void bookEfficiency(DQMStore::IBooker &iBooker, bool isUpgrade);
-  void createEfficiency(DQMStore::IBooker &iBooker, DQMStore::IGetter &iGetter, bool isUpgrade);
-  void fillEfficiency(DQMStore::IBooker &iBooker, DQMStore::IGetter &iGetter, bool isbarrel, bool isUpgrade);
+  void createSummary(DQMStore::IBooker &iBooker, DQMStore::IGetter &iGetter, int upgradePhase);
+  void bookDeviations(DQMStore::IBooker &iBooker, int upgradePhase);
+  void bookEfficiency(DQMStore::IBooker &iBooker, int upgradePhase);
+  void createEfficiency(DQMStore::IBooker &iBooker, DQMStore::IGetter &iGetter, int upgradePhase);
+  void fillEfficiency(DQMStore::IBooker &iBooker, DQMStore::IGetter &iGetter, bool isbarrel, int upgradePhase);
   void fillEfficiencySummary(DQMStore::IBooker &iBooker, DQMStore::IGetter &iGetter);
   void bookOccupancyPlots(DQMStore::IBooker &iBooker, DQMStore::IGetter &iGetter, bool hiRes, bool isbarrel);
   void bookOccupancyPlots(DQMStore::IBooker &iBooker, DQMStore::IGetter &iGetter, bool hiRes);
@@ -77,7 +77,7 @@ private:
   MonitorElement *getSummaryME(DQMStore::IBooker &iBooker,
                                DQMStore::IGetter &iGetter,
                                std::string me_name,
-                               bool isUpgrade);
+                               int upgradePhase);
   MonitorElement *getFEDSummaryME(DQMStore::IBooker &iBooker, DQMStore::IGetter &iGetter, std::string me_name);
   void GetBladeSubdirs(DQMStore::IBooker &iBooker, DQMStore::IGetter &iGetter, std::vector<std::string> &blade_subdirs);
   void fillSummary(DQMStore::IBooker &iBooker,
@@ -85,7 +85,7 @@ private:
                    std::string dir_name,
                    std::vector<std::string> &me_names,
                    bool isbarrel,
-                   bool isUpgrade);
+                   int upgradePhase);
   void fillFEDErrorSummary(DQMStore::IBooker &iBooker,
                            DQMStore::IGetter &iGetter,
                            std::string dir_name,
@@ -93,11 +93,11 @@ private:
   void fillGrandBarrelSummaryHistos(DQMStore::IBooker &iBooker,
                                     DQMStore::IGetter &iGetter,
                                     std::vector<std::string> &me_names,
-                                    bool isUpgrade);
+                                    int upgradePhase);
   void fillGrandEndcapSummaryHistos(DQMStore::IBooker &iBooker,
                                     DQMStore::IGetter &iGetter,
                                     std::vector<std::string> &me_names,
-                                    bool isUpgrade);
+                                    int upgradePhase);
   void getGrandSummaryME(DQMStore::IBooker &iBooker,
                          DQMStore::IGetter &iGetter,
                          int nbin,

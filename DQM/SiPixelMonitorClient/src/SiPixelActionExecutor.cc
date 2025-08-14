@@ -158,7 +158,7 @@ bool SiPixelActionExecutor::readConfiguration(int &tkmap_freq, int &summary_freq
 }
 
 //=============================================================================================================
-void SiPixelActionExecutor::createSummary(DQMStore::IBooker &iBooker, DQMStore::IGetter &iGetter, bool isUpgrade) {
+void SiPixelActionExecutor::createSummary(DQMStore::IBooker &iBooker, DQMStore::IGetter &iGetter, int upgradePhase) {
   // To be majorly overhauled and split into two, I guess.
 
   // cout<<"entering SiPixelActionExecutor::createSummary..."<<endl;
@@ -184,7 +184,7 @@ void SiPixelActionExecutor::createSummary(DQMStore::IBooker &iBooker, DQMStore::
   iBooker.setCurrentFolder("Pixel/");
   iGetter.setCurrentFolder("Pixel/");
   fillSummary(iBooker, iGetter, barrel_structure_name, barrel_me_names, true,
-              isUpgrade);  // Barrel
+              upgradePhase);  // Barrel
   iBooker.setCurrentFolder("Pixel/");
   iGetter.setCurrentFolder("Pixel/");
   string endcap_structure_name;
@@ -201,7 +201,7 @@ void SiPixelActionExecutor::createSummary(DQMStore::IBooker &iBooker, DQMStore::
   iGetter.setCurrentFolder("Pixel/");
 
   fillSummary(iBooker, iGetter, endcap_structure_name, endcap_me_names, false,
-              isUpgrade);  // Endcap
+              upgradePhase);  // Endcap
   iBooker.setCurrentFolder("Pixel/");
   iGetter.setCurrentFolder("Pixel/");
 
@@ -227,9 +227,9 @@ void SiPixelActionExecutor::createSummary(DQMStore::IBooker &iBooker, DQMStore::
 }
 
 //=============================================================================================================
-void SiPixelActionExecutor::bookDeviations(DQMStore::IBooker &iBooker, bool isUpgrade) {
+void SiPixelActionExecutor::bookDeviations(DQMStore::IBooker &iBooker, int upgradePhase) {
   int nBPixModules;
-  if (isUpgrade) {
+  if (upgradePhase == 1) {
     nBPixModules = 1184;
   } else {
     nBPixModules = 768;
@@ -289,7 +289,7 @@ void SiPixelActionExecutor::fillSummary(DQMStore::IBooker &iBooker,
                                         string dir_name,
                                         vector<string> &me_names,
                                         bool isbarrel,
-                                        bool isUpgrade) {
+                                        int upgradePhase) {
   // cout<<"entering SiPixelActionExecutor::fillSummary..."<<endl;
   string currDir = iBooker.pwd();
   string prefix;
@@ -341,10 +341,10 @@ void SiPixelActionExecutor::fillSummary(DQMStore::IBooker &iBooker,
       string tag;
       if ((*iv).find("residual") != string::npos) {  // track residuals
         tag = prefix + "_" + (*iv) + "_mean_" + currDir.substr(currDir.find(dir_name));
-        temp = getSummaryME(iBooker, iGetter, tag, isUpgrade);
+        temp = getSummaryME(iBooker, iGetter, tag, upgradePhase);
         sum_mes.push_back(temp);
         tag = prefix + "_" + (*iv) + "_RMS_" + currDir.substr(currDir.find(dir_name));
-        temp = getSummaryME(iBooker, iGetter, tag, isUpgrade);
+        temp = getSummaryME(iBooker, iGetter, tag, upgradePhase);
         sum_mes.push_back(temp);
       } else if (prefix == "SUMCAL") {  // calibrations
         if ((*iv) == "Gain1d" || (*iv) == "GainChi2NDF1d" || (*iv) == "GainChi2Prob1d" || (*iv) == "GainNPoints1d" ||
@@ -353,34 +353,34 @@ void SiPixelActionExecutor::fillSummary(DQMStore::IBooker &iBooker,
             (*iv) == "ScurveChi2ProbSummary" || (*iv) == "ScurveFitResultSummary" || (*iv) == "ScurveSigmasSummary" ||
             (*iv) == "ScurveThresholdSummary") {
           tag = prefix + "_" + (*iv) + "_mean_" + currDir.substr(currDir.find(dir_name));
-          temp = getSummaryME(iBooker, iGetter, tag, isUpgrade);
+          temp = getSummaryME(iBooker, iGetter, tag, upgradePhase);
           sum_mes.push_back(temp);
           tag = prefix + "_" + (*iv) + "_RMS_" + currDir.substr(currDir.find(dir_name));
-          temp = getSummaryME(iBooker, iGetter, tag, isUpgrade);
+          temp = getSummaryME(iBooker, iGetter, tag, upgradePhase);
           sum_mes.push_back(temp);
         } else if ((*iv) == "SiPixelErrorsCalibDigis") {
           tag = prefix + "_" + (*iv) + "_NCalibErrors_" + currDir.substr(currDir.find(dir_name));
-          temp = getSummaryME(iBooker, iGetter, tag, isUpgrade);
+          temp = getSummaryME(iBooker, iGetter, tag, upgradePhase);
           sum_mes.push_back(temp);
         } else if ((*iv) == "GainFitResult2d") {
           tag = prefix + "_" + (*iv) + "_NNegativeFits_" + currDir.substr(currDir.find(dir_name));
-          temp = getSummaryME(iBooker, iGetter, tag, isUpgrade);
+          temp = getSummaryME(iBooker, iGetter, tag, upgradePhase);
           sum_mes.push_back(temp);
         } else if ((*iv) == "pixelAliveSummary") {
           tag = prefix + "_" + (*iv) + "_FracOfPerfectPix_" + currDir.substr(currDir.find(dir_name));
-          temp = getSummaryME(iBooker, iGetter, tag, isUpgrade);
+          temp = getSummaryME(iBooker, iGetter, tag, upgradePhase);
           sum_mes.push_back(temp);
           tag = prefix + "_" + (*iv) + "_mean_" + currDir.substr(currDir.find(dir_name));
-          temp = getSummaryME(iBooker, iGetter, tag, isUpgrade);
+          temp = getSummaryME(iBooker, iGetter, tag, upgradePhase);
           sum_mes.push_back(temp);
         }
       } else {
         tag = prefix + "_" + (*iv) + "_" + currDir.substr(currDir.find(dir_name));
-        temp = getSummaryME(iBooker, iGetter, tag, isUpgrade);
+        temp = getSummaryME(iBooker, iGetter, tag, upgradePhase);
         sum_mes.push_back(temp);
         if ((*iv) == "ndigis") {
           tag = prefix + "_" + (*iv) + "FREQ_" + currDir.substr(currDir.find(dir_name));
-          temp = getSummaryME(iBooker, iGetter, tag, isUpgrade);
+          temp = getSummaryME(iBooker, iGetter, tag, upgradePhase);
           sum_mes.push_back(temp);
         }
         if (prefix == "SUMDIG" && (*iv) == "adc") {
@@ -640,7 +640,7 @@ void SiPixelActionExecutor::fillSummary(DQMStore::IBooker &iBooker,
         if ((*it).find("Endcap") != string::npos || (*it).find("AdditionalPixelErrors") != string::npos)
           continue;
         fillSummary(iBooker, iGetter, dir_name, me_names, true,
-                    isUpgrade);  // Barrel
+                    upgradePhase);  // Barrel
         iBooker.goUp();
         iGetter.setCurrentFolder(iBooker.pwd());
       }
@@ -651,7 +651,7 @@ void SiPixelActionExecutor::fillSummary(DQMStore::IBooker &iBooker,
                 "Barrel Summary configuration parameters!! ";
         return;
       }
-      fillGrandBarrelSummaryHistos(iBooker, iGetter, grandbarrel_me_names, isUpgrade);
+      fillGrandBarrelSummaryHistos(iBooker, iGetter, grandbarrel_me_names, upgradePhase);
 
     } else  // Endcap
     {
@@ -666,7 +666,7 @@ void SiPixelActionExecutor::fillSummary(DQMStore::IBooker &iBooker,
         if ((*it).find("Barrel") != string::npos || (*it).find("AdditionalPixelErrors") != string::npos)
           continue;
         fillSummary(iBooker, iGetter, dir_name, me_names, false,
-                    isUpgrade);  // Endcap
+                    upgradePhase);  // Endcap
         iBooker.goUp();
         iGetter.setCurrentFolder(iBooker.pwd());
       }
@@ -677,7 +677,7 @@ void SiPixelActionExecutor::fillSummary(DQMStore::IBooker &iBooker,
                 "Endcap Summary configuration parameters!! ";
         return;
       }
-      fillGrandEndcapSummaryHistos(iBooker, iGetter, grandendcap_me_names, isUpgrade);
+      fillGrandEndcapSummaryHistos(iBooker, iGetter, grandendcap_me_names, upgradePhase);
     }
   }
   //  cout<<"...leaving SiPixelActionExecutor::fillSummary!"<<endl;
@@ -879,7 +879,7 @@ void SiPixelActionExecutor::fillFEDErrorSummary(DQMStore::IBooker &iBooker,
 void SiPixelActionExecutor::fillGrandBarrelSummaryHistos(DQMStore::IBooker &iBooker,
                                                          DQMStore::IGetter &iGetter,
                                                          vector<string> &me_names,
-                                                         bool isUpgrade) {
+                                                         int upgradePhase) {
   //  cout<<"Entering
   //  SiPixelActionExecutor::fillGrandBarrelSummaryHistos...:"<<me_names.size()<<endl;
   vector<MonitorElement *> gsum_mes;
@@ -973,7 +973,7 @@ void SiPixelActionExecutor::fillGrandBarrelSummaryHistos(DQMStore::IBooker &iBoo
               prefix = "SUMCAL";
           }  // end source_type if
 
-          if (first_subdir && !isUpgrade) {
+          if (first_subdir && (upgradePhase == 0)) {
             nbin = me->getTH1F()->GetNbinsX();
             string me_name = prefix + "_" + (*iv) + "_" + dir_name;
             if ((*iv) == "adcCOMB" || (*iv) == "chargeCOMB")
@@ -992,7 +992,7 @@ void SiPixelActionExecutor::fillGrandBarrelSummaryHistos(DQMStore::IBooker &iBoo
               nbin = nbin * nDirs;
 
             getGrandSummaryME(iBooker, iGetter, nbin, me_name, gsum_mes);
-          } else if (first_subdir && isUpgrade) {
+          } else if (first_subdir && (upgradePhase == 1)) {
             nbin = me->getTH1F()->GetNbinsX();
             string me_name = prefix + "_" + (*iv) + "_" + dir_name;
             if ((*iv) == "adcCOMB" || (*iv) == "chargeCOMB")
@@ -1046,7 +1046,7 @@ void SiPixelActionExecutor::fillGrandBarrelSummaryHistos(DQMStore::IBooker &iBoo
               (*igm)->setAxisTitle(title, 2);
 
               // Setting binning
-              if (!isUpgrade) {
+              if (upgradePhase == 0) {
                 if ((*igm)->getName().find("ALLMODS_adcCOMB_") != string::npos) {
                   nbin_subdir = 128;
                 } else if ((*igm)->getName().find("ALLMODS_chargeCOMB_") != string::npos) {
@@ -1112,7 +1112,7 @@ void SiPixelActionExecutor::fillGrandBarrelSummaryHistos(DQMStore::IBooker &iBoo
                     }
                   }
                 }
-              } else if (isUpgrade) {
+              } else if (upgradePhase == 1) {
                 if ((*igm)->getName().find("ALLMODS_adcCOMB_") != string::npos) {
                   nbin_subdir = 128;
                 } else if ((*igm)->getName().find("ALLMODS_chargeCOMB_") != string::npos) {
@@ -1261,7 +1261,7 @@ void SiPixelActionExecutor::fillGrandBarrelSummaryHistos(DQMStore::IBooker &iBoo
 void SiPixelActionExecutor::fillGrandEndcapSummaryHistos(DQMStore::IBooker &iBooker,
                                                          DQMStore::IGetter &iGetter,
                                                          vector<string> &me_names,
-                                                         bool isUpgrade) {
+                                                         int upgradePhase) {
   // printing cout<<"Entering
   // SiPixelActionExecutor::fillGrandEndcapSummaryHistos..."<<endl;
   vector<MonitorElement *> gsum_mes;
@@ -1351,7 +1351,7 @@ void SiPixelActionExecutor::fillGrandEndcapSummaryHistos(DQMStore::IBooker &iBoo
               prefix = "SUMCAL";
           }
 
-          if (first_subdir && !isUpgrade) {
+          if (first_subdir && (upgradePhase == 0)) {
             nbin = me->getTH1F()->GetNbinsX();
             string me_name = prefix + "_" + (*iv) + "_" + dir_name;
             if ((*iv) == "adcCOMB" || (*iv) == "chargeCOMB")
@@ -1371,7 +1371,7 @@ void SiPixelActionExecutor::fillGrandEndcapSummaryHistos(DQMStore::IBooker &iBoo
             else if (dir_name.find("Blade") != string::npos)
               nbin = 7;
             getGrandSummaryME(iBooker, iGetter, nbin, me_name, gsum_mes);
-          } else if (first_subdir && isUpgrade) {
+          } else if (first_subdir && (upgradePhase == 1)) {
             nbin = me->getTH1F()->GetNbinsX();
             string me_name = prefix + "_" + (*iv) + "_" + dir_name;
             if ((*iv) == "adcCOMB" || (*iv) == "chargeCOMB")
@@ -1420,7 +1420,7 @@ void SiPixelActionExecutor::fillGrandEndcapSummaryHistos(DQMStore::IBooker &iBoo
                 title = "mean " + (*iv) + " per Module";
               (*igm)->setAxisTitle(title, 2);
               nbin_i = 0;
-              if (!isUpgrade) {
+              if (upgradePhase == 0) {
                 if ((*igm)->getName().find("ALLMODS_adcCOMB_") != string::npos) {
                   nbin_subdir = 128;
                 } else if ((*igm)->getName().find("ALLMODS_chargeCOMB_") != string::npos) {
@@ -1466,7 +1466,7 @@ void SiPixelActionExecutor::fillGrandEndcapSummaryHistos(DQMStore::IBooker &iBoo
                       nbin_i = 72;
                   }
                 }
-              } else if (isUpgrade) {
+              } else if (upgradePhase == 1) {
                 if ((*igm)->getName().find("ALLMODS_adcCOMB_") != string::npos) {
                   nbin_subdir = 128;
                 } else if ((*igm)->getName().find("ALLMODS_chargeCOMB_") != string::npos) {
@@ -1617,7 +1617,7 @@ void SiPixelActionExecutor::getGrandSummaryME(
 SiPixelActionExecutor::MonitorElement *SiPixelActionExecutor::getSummaryME(DQMStore::IBooker &iBooker,
                                                                            DQMStore::IGetter &iGetter,
                                                                            string me_name,
-                                                                           bool isUpgrade) {
+                                                                           int upgradePhase) {
   // printing cout<<"Entering SiPixelActionExecutor::getSummaryME for:
   // "<<me_name<<endl;
   MonitorElement *me = nullptr;
@@ -1636,7 +1636,7 @@ SiPixelActionExecutor::MonitorElement *SiPixelActionExecutor::getSummaryME(DQMSt
     }
   }
   contents.clear();
-  if (!isUpgrade) {
+  if (upgradePhase == 0) {
     if (me_name.find("SUMOFF") == string::npos) {
       if (me_name.find("Blade_") != string::npos)
         me = iBooker.book1D(me_name.c_str(), me_name.c_str(), 7, 1., 8.);
@@ -1652,7 +1652,7 @@ SiPixelActionExecutor::MonitorElement *SiPixelActionExecutor::getSummaryME(DQMSt
       me = iBooker.book1D(me_name.c_str(), me_name.c_str(), 12, 1., 13.);
     }
   }  // endifNOTUpgrade
-  else if (isUpgrade) {
+  else if (upgradePhase == 1) {
     if (me_name.find("SUMOFF") == string::npos) {
       if (me_name.find("Blade_") != string::npos)
         me = iBooker.book1D(me_name.c_str(), me_name.c_str(), 2, 1., 3.);
@@ -1915,11 +1915,11 @@ void SiPixelActionExecutor::normaliseAvDigiOccVsLumi(DQMStore::IBooker &iBooker,
 
 //=============================================================================================================
 
-void SiPixelActionExecutor::bookEfficiency(DQMStore::IBooker &iBooker, bool isUpgrade) {
+void SiPixelActionExecutor::bookEfficiency(DQMStore::IBooker &iBooker, int upgradePhase) {
   // Barrel
   iBooker.cd();
   iBooker.setCurrentFolder("Pixel/Barrel");
-  if (!isUpgrade) {
+  if (upgradePhase == 0) {
     if (Tier0Flag_) {
       HitEfficiency_L1 = iBooker.book2D(
           "HitEfficiency_L1", "Hit Efficiency in Barrel_Layer1;Module;Ladder", 9, -4.5, 4.5, 21, -10.5, 10.5);
@@ -1936,7 +1936,7 @@ void SiPixelActionExecutor::bookEfficiency(DQMStore::IBooker &iBooker, bool isUp
           "HitEfficiency_L3", "Hit Efficiency in Barrel_Layer3;Module;Ladder", 9, -4.5, 4.5, 45, -22.5, 22.5);
     }
   }  // endifNOTUpgrade
-  else if (isUpgrade) {
+  else if (upgradePhase == 1) {
     if (Tier0Flag_) {
       HitEfficiency_L1 =
           iBooker.book2D("HitEfficiency_L1", "Hit Efficiency in Barrel_Layer1;z-side;Ladder", 2, -1., 1., 12, -6., 6.);
@@ -1960,7 +1960,7 @@ void SiPixelActionExecutor::bookEfficiency(DQMStore::IBooker &iBooker, bool isUp
   // Endcap
   iBooker.cd();
   iBooker.setCurrentFolder("Pixel/Endcap");
-  if (!isUpgrade) {
+  if (upgradePhase == 0) {
     if (Tier0Flag_) {
       HitEfficiency_Dp1 = iBooker.book2D(
           "HitEfficiency_Dp1", "Hit Efficiency in Endcap_Disk_p1;Blade;Panel", 26, -13., 13., 2, 0.5, 2.5);
@@ -1980,7 +1980,7 @@ void SiPixelActionExecutor::bookEfficiency(DQMStore::IBooker &iBooker, bool isUp
       HitEfficiency_Dm2 = iBooker.book2D(
           "HitEfficiency_Dm2", "Hit Efficiency in Endcap_Disk_m2;Blades;Modules", 24, -12., 12., 7, 1., 8.);
     }
-  } else if (isUpgrade) {
+  } else if (upgradePhase == 1) {
     if (Tier0Flag_) {
       HitEfficiency_Dp1 =
           iBooker.book2D("HitEfficiency_Dp1", "Hit Efficiency in Endcap_Disk_p1;Blades;", 28, -17., 11., 1, 0., 1.);
@@ -2022,15 +2022,15 @@ void SiPixelActionExecutor::bookEfficiency(DQMStore::IBooker &iBooker, bool isUp
 
 //=============================================================================================================
 
-void SiPixelActionExecutor::createEfficiency(DQMStore::IBooker &iBooker, DQMStore::IGetter &iGetter, bool isUpgrade) {
+void SiPixelActionExecutor::createEfficiency(DQMStore::IBooker &iBooker, DQMStore::IGetter &iGetter, int upgradePhase) {
   // std::cout<<"entering
   // SiPixelActionExecutor::createEfficiency..."<<std::endl;
   iGetter.cd();
   iBooker.cd();
-  fillEfficiency(iBooker, iGetter, true, isUpgrade);  // Barrel
+  fillEfficiency(iBooker, iGetter, true, upgradePhase);  // Barrel
   iGetter.cd();
   iBooker.cd();
-  fillEfficiency(iBooker, iGetter, false, isUpgrade);  // Endcap
+  fillEfficiency(iBooker, iGetter, false, upgradePhase);  // Endcap
   iGetter.cd();
   iBooker.cd();
   // std::cout<<"leaving SiPixelActionExecutor::createEfficiency..."<<std::endl;
@@ -2063,7 +2063,7 @@ int SiPixelActionExecutor::getBlade(const std::string &dname_) {
 void SiPixelActionExecutor::fillEfficiency(DQMStore::IBooker &iBooker,
                                            DQMStore::IGetter &iGetter,
                                            bool isbarrel,
-                                           bool isUpgrade) {
+                                           int upgradePhase) {
   // cout<<"entering SiPixelActionExecutor::fillEfficiency..."<<std::endl;
   string currDir = iBooker.pwd();
   string dname = currDir.substr(currDir.find_last_of('/') + 1);
@@ -2071,7 +2071,7 @@ void SiPixelActionExecutor::fillEfficiency(DQMStore::IBooker &iBooker,
 
   if (Tier0Flag_) {  // Offline
     if (isbarrel && dname.find("Ladder_") != string::npos) {
-      if (!isUpgrade) {
+      if (upgradePhase == 0) {
         vector<string> meVec = iGetter.getMEs();
         for (vector<string>::const_iterator it = meVec.begin(); it != meVec.end(); it++) {
           string full_path = currDir + "/" + (*it);
@@ -2127,7 +2127,7 @@ void SiPixelActionExecutor::fillEfficiency(DQMStore::IBooker &iBooker,
           }
         }
       }  // endifNOTUpgradeInBPix
-      else if (isUpgrade) {
+      else if (upgradePhase == 1) {
         vector<string> meVec = iGetter.getMEs();
         for (vector<string>::const_iterator it = meVec.begin(); it != meVec.end(); it++) {
           string full_path = currDir + "/" + (*it);
@@ -2175,7 +2175,7 @@ void SiPixelActionExecutor::fillEfficiency(DQMStore::IBooker &iBooker,
           }
         }
       }  // endifUpgradeInBPix
-    } else if (!isbarrel && dname.find("Blade_") != string::npos && !isUpgrade) {
+    } else if (!isbarrel && dname.find("Blade_") != string::npos && (upgradePhase == 0)) {
       vector<string> meVec = iGetter.getMEs();
       for (vector<string>::const_iterator it = meVec.begin(); it != meVec.end(); it++) {
         string full_path = currDir + "/" + (*it);
@@ -2227,7 +2227,7 @@ void SiPixelActionExecutor::fillEfficiency(DQMStore::IBooker &iBooker,
           }  // EndOfFor
         }
       }
-    } else if (!isbarrel && dname.find("Blade_") != string::npos && isUpgrade) {
+    } else if (!isbarrel && dname.find("Blade_") != string::npos && (upgradePhase == 1)) {
       vector<string> meVec = iGetter.getMEs();
       for (vector<string>::const_iterator it = meVec.begin(); it != meVec.end(); it++) {
         string full_path = currDir + "/" + (*it);
@@ -2322,7 +2322,7 @@ void SiPixelActionExecutor::fillEfficiency(DQMStore::IBooker &iBooker,
         if (*it != "Pixel" &&
             ((isbarrel && (*it).find("Barrel") == string::npos) || (!isbarrel && (*it).find("Endcap") == string::npos)))
           continue;
-        fillEfficiency(iBooker, iGetter, isbarrel, isUpgrade);
+        fillEfficiency(iBooker, iGetter, isbarrel, upgradePhase);
         iBooker.goUp();
         iGetter.setCurrentFolder(iBooker.pwd());
       }
@@ -2371,7 +2371,7 @@ void SiPixelActionExecutor::fillEfficiency(DQMStore::IBooker &iBooker,
                 binx = 8;
               }
             }
-            if (!isUpgrade) {
+            if (upgradePhase == 0) {
               if (currDir.find("01") != string::npos) {
                 biny = 1;
               } else if (currDir.find("02") != string::npos) {
@@ -2426,7 +2426,7 @@ void SiPixelActionExecutor::fillEfficiency(DQMStore::IBooker &iBooker,
                   biny = biny + 22;
                 }
               }
-            } else if (isUpgrade) {
+            } else if (upgradePhase == 1) {
               if (currDir.find("01") != string::npos) {
                 biny = 1;
               } else if (currDir.find("02") != string::npos) {
@@ -2507,7 +2507,7 @@ void SiPixelActionExecutor::fillEfficiency(DQMStore::IBooker &iBooker,
               }
             }
           } else {  // endcap
-            if (!isUpgrade) {
+            if (upgradePhase == 0) {
               if (currDir.find("01") != string::npos) {
                 binx = 1;
               } else if (currDir.find("02") != string::npos) {
@@ -2551,7 +2551,7 @@ void SiPixelActionExecutor::fillEfficiency(DQMStore::IBooker &iBooker,
               } else if (currDir.find("Panel_1/Module_4") != string::npos) {
                 biny = 7;
               }
-            } else if (isUpgrade) {
+            } else if (upgradePhase == 1) {
               if (currDir.find("01") != string::npos) {
                 binx = 1;
               } else if (currDir.find("02") != string::npos) {
@@ -2610,7 +2610,7 @@ void SiPixelActionExecutor::fillEfficiency(DQMStore::IBooker &iBooker,
             HitEfficiency_L3 = iGetter.get("Pixel/Barrel/HitEfficiency_L3");
             if (HitEfficiency_L3)
               HitEfficiency_L3->setBinContent(binx, biny, (float)hitEfficiency);
-          } else if (isUpgrade && (currDir.find("Layer_4") != string::npos)) {
+          } else if ((upgradePhase == 1) && (currDir.find("Layer_4") != string::npos)) {
             HitEfficiency_L4 = iGetter.get("Pixel/Barrel/HitEfficiency_L4");
             if (HitEfficiency_L4)
               HitEfficiency_L4->setBinContent(binx, biny, (float)hitEfficiency);
@@ -2650,7 +2650,7 @@ void SiPixelActionExecutor::fillEfficiency(DQMStore::IBooker &iBooker,
         if (*it != "Pixel" &&
             ((isbarrel && (*it).find("Barrel") == string::npos) || (!isbarrel && (*it).find("Endcap") == string::npos)))
           continue;
-        fillEfficiency(iBooker, iGetter, isbarrel, isUpgrade);
+        fillEfficiency(iBooker, iGetter, isbarrel, upgradePhase);
         iBooker.goUp();
         iGetter.setCurrentFolder(iBooker.pwd());
       }

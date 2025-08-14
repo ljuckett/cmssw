@@ -66,7 +66,7 @@ private:
   bool Tier0Flag_;
   bool firstLumi;
   bool doHitEfficiency_;
-  bool isUpgrade_;
+  int upgradePhase_;
   std::string inputSource_;
 
   std::ostringstream html_out_;
