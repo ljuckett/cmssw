@@ -71,7 +71,7 @@ private:
   int nBigEvents;
   MonitorElement *bigFpixClusterEventRate;
   int bigEventSize;
-  bool isUpgrade;
+  int upgradePhase;
 
   std::vector<MonitorElement *> meClPosLayer;
   std::vector<MonitorElement *> meClPosDiskpz;

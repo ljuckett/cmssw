@@ -51,7 +51,7 @@ public:
             int type = 0,
             bool twoD = true,
             bool reducedSet = false,
-            bool isUpgrade = false);
+            int upgradePhase = 0);
   /// Fill histograms
   int fill(const edmNew::DetSetVector<SiPixelCluster> &input,
            const TrackerTopology *pTT,
@@ -72,7 +72,7 @@ public:
            bool twoD = true,
            bool reducedSet = false,
            bool smileyon = false,
-           bool isUpgrade = false);
+           int upgradePhase = 0);
 
 private:
   uint32_t id_;
