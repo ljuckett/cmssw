@@ -52,7 +52,7 @@ public:
             bool hiRes = false,
             bool reducedSet = false,
             bool additInfo = false,
-            bool isUpgrade = false);
+            int upgradePhase = 0);
   /// Fill histograms
   //  int fill(const edm::DetSetVector<PixelDigi> & input, bool modon=true,
   //           bool ladon=false, bool layon=false, bool phion=false,
@@ -78,7 +78,7 @@ public:
            const bool twoDimOnlyLayDisk,
            int& nDigisA,
            int& nDigisB,
-           bool isUpgrade);
+           int upgradePhase);
   void
   resetRocMap();  // This is to move the rocmap reset from the Source to the Module where the map is booked. Necessary for multithread safety.
   std::pair<int, int> getZeroLoEffROCs();  // Moved from Souce.cc. Gets number of zero and low eff ROCs from each module.

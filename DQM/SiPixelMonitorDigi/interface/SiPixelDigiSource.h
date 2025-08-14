@@ -210,7 +210,7 @@ private:
   bool DoZeroRocsFMI2;
 
   int bigEventSize;
-  bool isUpgrade;
+  int upgradePhase;
   bool firstRun;
 
   std::string I_name[1856];

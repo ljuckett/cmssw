@@ -44,12 +44,12 @@ void SiPixelDigiModule::book(const edm::ParameterSet& iConfig,
                              bool hiRes,
                              bool reducedSet,
                              bool additInfo,
-                             bool isUpgrade) {
+                             int upgradePhase) {
   bool barrel = DetId(id_).subdetId() == static_cast<int>(PixelSubdetector::PixelBarrel);
   bool endcap = DetId(id_).subdetId() == static_cast<int>(PixelSubdetector::PixelEndcap);
   bool isHalfModule = false;
   if (barrel) {
-    isHalfModule = PixelBarrelName(DetId(id_), pTT, isUpgrade).isHalfModule();
+    isHalfModule = PixelBarrelName(DetId(id_), pTT, upgradePhase).isHalfModule();
   }
 
   std::string hid;
@@ -103,7 +103,7 @@ void SiPixelDigiModule::book(const edm::ParameterSet& iConfig,
 
   if (type == 1 && barrel) {
     uint32_t DBladder;
-    DBladder = PixelBarrelName(DetId(id_), pTT, isUpgrade).ladderName();
+    DBladder = PixelBarrelName(DetId(id_), pTT, upgradePhase).ladderName();
     char sladder[80];
     sprintf(sladder, "Ladder_%02i", DBladder);
     hid = src.label() + "_" + sladder;
@@ -135,7 +135,7 @@ void SiPixelDigiModule::book(const edm::ParameterSet& iConfig,
   }
   if (type == 2 && barrel) {
     uint32_t DBlayer;
-    DBlayer = PixelBarrelName(DetId(id_), pTT, isUpgrade).layerName();
+    DBlayer = PixelBarrelName(DetId(id_), pTT, upgradePhase).layerName();
     char slayer[80];
     sprintf(slayer, "Layer_%i", DBlayer);
     hid = src.label() + "_" + slayer;
@@ -198,7 +198,7 @@ void SiPixelDigiModule::book(const edm::ParameterSet& iConfig,
   }
   if (type == 3 && barrel) {
     uint32_t DBmodule;
-    DBmodule = PixelBarrelName(DetId(id_), pTT, isUpgrade).moduleName();
+    DBmodule = PixelBarrelName(DetId(id_), pTT, upgradePhase).moduleName();
     char smodule[80];
     sprintf(smodule, "Ring_%i", DBmodule);
     hid = src.label() + "_" + smodule;
@@ -236,7 +236,7 @@ void SiPixelDigiModule::book(const edm::ParameterSet& iConfig,
   }
   if (type == 4 && endcap) {
     uint32_t blade;
-    blade = PixelEndcapName(DetId(id_), pTT, isUpgrade).bladeName();
+    blade = PixelEndcapName(DetId(id_), pTT, upgradePhase).bladeName();
 
     char sblade[80];
     sprintf(sblade, "Blade_%02i", blade);
@@ -250,7 +250,7 @@ void SiPixelDigiModule::book(const edm::ParameterSet& iConfig,
   }
   if (type == 5 && endcap) {
     uint32_t disk;
-    disk = PixelEndcapName(DetId(id_), pTT, isUpgrade).diskName();
+    disk = PixelEndcapName(DetId(id_), pTT, upgradePhase).diskName();
 
     char sdisk[80];
     sprintf(sdisk, "Disk_%i", disk);
@@ -279,8 +279,8 @@ void SiPixelDigiModule::book(const edm::ParameterSet& iConfig,
   if (type == 6 && endcap) {
     uint32_t panel;
     uint32_t module;
-    panel = PixelEndcapName(DetId(id_), pTT, isUpgrade).pannelName();
-    module = PixelEndcapName(DetId(id_), pTT, isUpgrade).plaquetteName();
+    panel = PixelEndcapName(DetId(id_), pTT, upgradePhase).pannelName();
+    module = PixelEndcapName(DetId(id_), pTT, upgradePhase).plaquetteName();
 
     char slab[80];
     sprintf(slab, "Panel_%i_Ring_%i", panel, module);
@@ -332,23 +332,25 @@ int SiPixelDigiModule::fill(const edm::DetSetVector<PixelDigi>& input,
                             bool twoDimOnlyLayDisk,
                             int& nDigisA,
                             int& nDigisB,
-                            bool isUpgrade) {
+                            int upgradePhase) {
   bool barrel = DetId(id_).subdetId() == static_cast<int>(PixelSubdetector::PixelBarrel);
   bool endcap = DetId(id_).subdetId() == static_cast<int>(PixelSubdetector::PixelEndcap);
   bool isHalfModule = false;
   uint32_t DBladder = 0;
   if (barrel) {
-    isHalfModule = PixelBarrelName(DetId(id_), pTT, isUpgrade).isHalfModule();
-    DBladder = PixelBarrelName(DetId(id_), pTT, isUpgrade).ladderName();
+    isHalfModule = PixelBarrelName(DetId(id_), pTT, upgradePhase).isHalfModule();
+    DBladder = PixelBarrelName(DetId(id_), pTT, upgradePhase).ladderName();
   }
 
   edm::DetSetVector<PixelDigi>::const_iterator isearch = input.find(id_);  // search  digis of detid
 
   unsigned int numberOfDigisMod = 0;
   int msize;
-  if (isUpgrade) {
+  if (upgradePhase == 1) {
+    std::cout << "PHASE 1" << std::endl;
     msize = 10;
   } else {
+	std::cout << "PHASE " << upgradePhase << std::endl;
     msize = 8;
   }
   int numberOfDigis[msize];
@@ -369,10 +371,10 @@ int SiPixelDigiModule::fill(const edm::DetSetVector<PixelDigi>& input,
       int DBlayer = 0;
       int DBmodule = 0;
 
-      if (!isUpgrade) {
-        PixelBarrelName::Shell DBshell = PixelBarrelName(DetId(id_), pTT, isUpgrade).shell();
-        DBlayer = PixelBarrelName(DetId(id_), pTT, isUpgrade).layerName();
-        DBmodule = PixelBarrelName(DetId(id_), pTT, isUpgrade).moduleName();
+      if (upgradePhase == 0) {
+        PixelBarrelName::Shell DBshell = PixelBarrelName(DetId(id_), pTT, upgradePhase).shell();
+        DBlayer = PixelBarrelName(DetId(id_), pTT, upgradePhase).layerName();
+        DBmodule = PixelBarrelName(DetId(id_), pTT, upgradePhase).moduleName();
         if (barrel) {
           if (isHalfModule) {
             if (DBshell == PixelBarrelName::pI || DBshell == PixelBarrelName::pO) {
@@ -417,9 +419,9 @@ int SiPixelDigiModule::fill(const edm::DetSetVector<PixelDigi>& input,
             }
           }
         }
-      } else if (isUpgrade) {
-        DBlayer = PixelBarrelName(DetId(id_), pTT, isUpgrade).layerName();
-        DBmodule = PixelBarrelName(DetId(id_), pTT, isUpgrade).moduleName();
+      } else if (upgradePhase == 1) {
+        DBlayer = PixelBarrelName(DetId(id_), pTT, upgradePhase).layerName();
+        DBmodule = PixelBarrelName(DetId(id_), pTT, upgradePhase).moduleName();
         if (barrel) {
           if (row < 80) {
             numberOfDigis[0]++;
@@ -526,8 +528,8 @@ int SiPixelDigiModule::fill(const edm::DetSetVector<PixelDigi>& input,
           //ROC monitoring
           int DBpanel;
           int DBblade;
-          DBpanel = PixelEndcapName(DetId(id_), pTT, isUpgrade).pannelName();
-          DBblade = PixelEndcapName(DetId(id_), pTT, isUpgrade).bladeName();
+          DBpanel = PixelEndcapName(DetId(id_), pTT, upgradePhase).pannelName();
+          DBblade = PixelEndcapName(DetId(id_), pTT, upgradePhase).bladeName();
           float offx = 0.;
           //This crazy offset takes into account the roc and module fpix configuration
           for (int i = DBpanel; i < DBmodule; ++i) {
