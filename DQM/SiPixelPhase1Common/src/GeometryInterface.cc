@@ -153,9 +153,9 @@ void GeometryInterface::loadFromTopology(const TrackerGeometry& trackerGeometry,
   // the names are created with PixelBarrelName et. al. later
   addExtractor(intern("PXModuleName"), detid, 0, 0);
 
-  int phase = iConfig.getParameter<int>("upgradePhase");
-  bool isUpgrade = phase == 1;
-
+  int upgradePhase = iConfig.getParameter<int>("upgradePhase");
+  std::cout << upgradePhase << std::endl;
+  
   // Now traverse the detector and collect whatever we need.
   auto detids = trackerGeometry.detIds();
   for (DetId id : detids) {
@@ -166,10 +166,10 @@ void GeometryInterface::loadFromTopology(const TrackerGeometry& trackerGeometry,
     // prepare pretty names
     std::string name = "";
     if (id.subdetId() == PixelSubdetector::PixelBarrel) {  // Barrel
-      PixelBarrelName mod(id, tt, isUpgrade);
+      PixelBarrelName mod(id, tt, upgradePhase);
       name = mod.name();
     } else {  // assume Endcap
-      PixelEndcapName mod(id, tt, isUpgrade);
+      PixelEndcapName mod(id, tt, upgradePhase);
       name = mod.name();
     }
     format_value[std::make_pair(intern("PXModuleName"), Value(id.rawId()))] = name;
@@ -204,11 +204,11 @@ void GeometryInterface::loadFromSiPixelCoordinates(const TrackerGeometry& tracke
   // determine, and use SiPixelCoordinates for complicated things.
   // SiPixelCoordinates uses lookup maps for everything, so it is faster than
   // most other code, but still slow on DQM scales.
-  int phase = iConfig.getParameter<int>("upgradePhase");
+  int upgradePhase = iConfig.getParameter<int>("upgradePhase");
 
   // this shared pointer is kept alive by the references in the lambdas that follow.
   // That is a bit less obvious than keeping it as a member but more correct.
-  auto coord = std::make_shared<SiPixelCoordinates>(phase);
+  auto coord = std::make_shared<SiPixelCoordinates>(upgradePhase);
 
   // note that we should reeinit for each event. But this probably won't explode
   // thanks to the massive memoization in SiPixelCoordinates which is completely
@@ -326,10 +326,10 @@ void GeometryInterface::loadFromSiPixelCoordinates(const TrackerGeometry& tracke
       1.0 / 16.0);
   addExtractor(
       intern("SignedBladePanelCoord"),  // FPIX y
-      [coord, from_coord, phase](InterestingQuantities const& iq) {
-        if (phase == 0) {
+      [coord, from_coord, upgradePhase](InterestingQuantities const& iq) {
+        if (upgradePhase == 0) {
           return from_coord(coord->signed_blade_coord(iq.sourceModule(), std::make_pair(int(iq.row), int(iq.col))));
-        } else if (phase == 1) {
+        } else if (upgradePhase == 1) {
           return from_coord(
               coord->signed_blade_panel_coord(iq.sourceModule(), std::make_pair(int(iq.row), int(iq.col))));
         } else {
@@ -338,13 +338,13 @@ void GeometryInterface::loadFromSiPixelCoordinates(const TrackerGeometry& tracke
       },
       UNDEFINED,
       UNDEFINED,
-      phase == 1 ? 0.25 : 0.2);
+      upgradePhase == 1 ? 0.25 : 0.2);
   addExtractor(
       intern("SignedShiftedBladePanelCoord"),  // FPIX-as-one y
-      [coord, from_coord, phase](InterestingQuantities const& iq) {
-        if (phase == 0) {
+      [coord, from_coord, upgradePhase](InterestingQuantities const& iq) {
+        if (upgradePhase == 0) {
           return from_coord(coord->signed_blade_coord(iq.sourceModule(), std::make_pair(int(iq.row), int(iq.col))));
-        } else if (phase == 1) {
+        } else if (upgradePhase == 1) {
           return from_coord(
               coord->signed_shifted_blade_panel_coord(iq.sourceModule(), std::make_pair(int(iq.row), int(iq.col))));
         } else {
@@ -353,7 +353,7 @@ void GeometryInterface::loadFromSiPixelCoordinates(const TrackerGeometry& tracke
       },
       UNDEFINED,
       UNDEFINED,
-      phase == 1 ? 0.25 : 0.1  // half-roc for phase0
+      upgradePhase == 1 ? 0.25 : 0.1  // half-roc for phase0
   );
   addExtractor(
       intern("SignedBladePanel"),  // per-module FPIX y
