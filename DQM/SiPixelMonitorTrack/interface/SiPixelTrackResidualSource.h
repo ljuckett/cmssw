@@ -102,7 +102,7 @@ private:
   bool ladOn, layOn, phiOn;
   // forward:
   bool ringOn, bladeOn, diskOn;
-  bool isUpgrade;
+  int upgradePhase;
   double ptminres_;
   bool firstRun;
   int NTotal;

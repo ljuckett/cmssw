@@ -38,12 +38,12 @@ void SiPixelHitEfficiencyModule::book(const edm::ParameterSet &iConfig,
                                       const TrackerTopology *pTT,
                                       DQMStore::IBooker &iBooker,
                                       int type,
-                                      bool isUpgrade) {
+                                      int upgradePhase) {
   bool barrel = DetId(id_).subdetId() == static_cast<int>(PixelSubdetector::PixelBarrel);
   bool endcap = DetId(id_).subdetId() == static_cast<int>(PixelSubdetector::PixelEndcap);
   bool isHalfModule = false;
   if (barrel) {
-    isHalfModule = PixelBarrelName(DetId(id_), pTT, isUpgrade).isHalfModule();
+    isHalfModule = PixelBarrelName(DetId(id_), pTT, upgradePhase).isHalfModule();
   }
 
   edm::InputTag src = iConfig.getParameter<edm::InputTag>("src");
@@ -96,7 +96,7 @@ void SiPixelHitEfficiencyModule::book(const edm::ParameterSet &iConfig,
 
   if (type == 1 && barrel) {
     uint32_t DBladder;
-    DBladder = PixelBarrelName(DetId(id_), pTT, isUpgrade).ladderName();
+    DBladder = PixelBarrelName(DetId(id_), pTT, upgradePhase).ladderName();
     char sladder[80];
     sprintf(sladder, "Ladder_%02i", DBladder);
     hisID = src.label() + "_" + sladder;
@@ -165,7 +165,7 @@ void SiPixelHitEfficiencyModule::book(const edm::ParameterSet &iConfig,
 
   if (type == 2 && barrel) {
     uint32_t DBlayer;
-    DBlayer = PixelBarrelName(DetId(id_), pTT, isUpgrade).layerName();
+    DBlayer = PixelBarrelName(DetId(id_), pTT, upgradePhase).layerName();
     char slayer[80];
     sprintf(slayer, "Layer_%i", DBlayer);
     hisID = src.label() + "_" + slayer;
@@ -224,7 +224,7 @@ void SiPixelHitEfficiencyModule::book(const edm::ParameterSet &iConfig,
 
   if (type == 3 && barrel) {
     uint32_t DBmodule;
-    DBmodule = PixelBarrelName(DetId(id_), pTT, isUpgrade).moduleName();
+    DBmodule = PixelBarrelName(DetId(id_), pTT, upgradePhase).moduleName();
     char smodule[80];
     sprintf(smodule, "Ring_%i", DBmodule);
     hisID = src.label() + "_" + smodule;
@@ -283,7 +283,7 @@ void SiPixelHitEfficiencyModule::book(const edm::ParameterSet &iConfig,
 
   if (type == 4 && endcap) {
     uint32_t blade;
-    blade = PixelEndcapName(DetId(id_), pTT, isUpgrade).bladeName();
+    blade = PixelEndcapName(DetId(id_), pTT, upgradePhase).bladeName();
 
     char sblade[80];
     sprintf(sblade, "Blade_%02i", blade);
@@ -344,7 +344,7 @@ void SiPixelHitEfficiencyModule::book(const edm::ParameterSet &iConfig,
 
   if (type == 5 && endcap) {
     uint32_t disk;
-    disk = PixelEndcapName(DetId(id_), pTT, isUpgrade).diskName();
+    disk = PixelEndcapName(DetId(id_), pTT, upgradePhase).diskName();
 
     char sdisk[80];
     sprintf(sdisk, "Disk_%i", disk);
@@ -405,8 +405,8 @@ void SiPixelHitEfficiencyModule::book(const edm::ParameterSet &iConfig,
   if (type == 6 && endcap) {
     uint32_t panel;
     uint32_t module;
-    panel = PixelEndcapName(DetId(id_), pTT, isUpgrade).pannelName();
-    module = PixelEndcapName(DetId(id_), pTT, isUpgrade).plaquetteName();
+    panel = PixelEndcapName(DetId(id_), pTT, upgradePhase).pannelName();
+    module = PixelEndcapName(DetId(id_), pTT, upgradePhase).plaquetteName();
 
     char slab[80];
     sprintf(slab, "Panel_%i_Ring_%i", panel, module);

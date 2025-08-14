@@ -36,7 +36,7 @@ public:
   ~SiPixelHitEfficiencyModule();
 
   void book(
-      const edm::ParameterSet &, const TrackerTopology *, DQMStore::IBooker &, int type = 0, bool isUpgrade = false);
+      const edm::ParameterSet &, const TrackerTopology *, DQMStore::IBooker &, int type = 0, int upgradePhase = 0);
   void fill(const TrackerTopology *pTT,
             const LocalTrajectoryParameters &ltp,
             bool isHitValid,

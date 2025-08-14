@@ -54,7 +54,7 @@ public:
             int type = 0,
             bool twoD = true,
             bool reducedSet = false,
-            bool isUpgrade = false);
+            int upgradePhase = 0);
   /// Fill histograms
   void fill(const float &rechit_x,
             const float &rechit_y,

@@ -76,7 +76,7 @@ private:
   bool ringOn, bladeOn, diskOn;
 
   bool firstRun;
-  bool isUpgrade;
+  int upgradePhase;
 };
 
 #endif

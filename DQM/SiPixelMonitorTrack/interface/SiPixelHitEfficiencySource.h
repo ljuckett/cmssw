@@ -100,7 +100,7 @@ private:
   double vtxndof_;
   double vtxchi2_;
 
-  bool isUpgrade;
+  int upgradePhase;
 
   // MEs for cluster probability
   MonitorElement *meClusterProbabilityL1_Plus_;

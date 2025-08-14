@@ -55,7 +55,7 @@ SiPixelTrackResidualSource::SiPixelTrackResidualSource(const edm::ParameterSet &
       ringOn(pSet.getUntrackedParameter<bool>("ringOn", false)),
       bladeOn(pSet.getUntrackedParameter<bool>("bladeOn", false)),
       diskOn(pSet.getUntrackedParameter<bool>("diskOn", false)),
-      isUpgrade(pSet.getUntrackedParameter<bool>("isUpgrade", false)),
+      upgradePhase(pSet.getUntrackedParameter<bool>("upgradePhase", 0)),
       noOfLayers(0),
       noOfDisks(0) {
   pSet_ = pSet;
@@ -127,7 +127,7 @@ void SiPixelTrackResidualSource::dqmBeginRun(const edm::Run &r, edm::EventSetup 
           pair<uint32_t, SiPixelTrackResidualModule *>((*pxb)->geographicalId().rawId(), module));
       // int DBlayer = PixelBarrelNameWrapper(pSet_,
       // DetId((*pxb)->geographicalId())).layerName();
-      int DBlayer = PixelBarrelName(DetId((*pxb)->geographicalId()), pTT, isUpgrade).layerName();
+      int DBlayer = PixelBarrelName(DetId((*pxb)->geographicalId()), pTT, upgradePhase).layerName();
       if (noOfLayers < DBlayer)
         noOfLayers = DBlayer;
     }
@@ -138,7 +138,7 @@ void SiPixelTrackResidualSource::dqmBeginRun(const edm::Run &r, edm::EventSetup 
       theSiPixelStructure.insert(
           pair<uint32_t, SiPixelTrackResidualModule *>((*pxf)->geographicalId().rawId(), module));
       int DBdisk;
-      DBdisk = PixelEndcapName(DetId((*pxf)->geographicalId()), pTT, isUpgrade).diskName();
+      DBdisk = PixelEndcapName(DetId((*pxf)->geographicalId()), pTT, upgradePhase).diskName();
       if (noOfDisks < DBdisk)
         noOfDisks = DBdisk;
     }
@@ -180,44 +180,44 @@ void SiPixelTrackResidualSource::bookHistograms(DQMStore::IBooker &iBooker,
        pxd != theSiPixelStructure.end();
        pxd++) {
     if (modOn) {
-      if (theSiPixelFolder.setModuleFolder(iBooker, (*pxd).first, 0, isUpgrade))
-        (*pxd).second->book(pSet_, pTT, iBooker, reducedSet, 0, isUpgrade);
+      if (theSiPixelFolder.setModuleFolder(iBooker, (*pxd).first, 0, upgradePhase))
+        (*pxd).second->book(pSet_, pTT, iBooker, reducedSet, 0, upgradePhase);
       else
         throw cms::Exception("LogicError") << "SiPixelTrackResidualSource Folder Creation Failed! ";
     }
     if (ladOn) {
-      if (theSiPixelFolder.setModuleFolder(iBooker, (*pxd).first, 1, isUpgrade)) {
-        (*pxd).second->book(pSet_, pTT, iBooker, reducedSet, 1, isUpgrade);
+      if (theSiPixelFolder.setModuleFolder(iBooker, (*pxd).first, 1, upgradePhase)) {
+        (*pxd).second->book(pSet_, pTT, iBooker, reducedSet, 1, upgradePhase);
       } else
         throw cms::Exception("LogicError") << "SiPixelTrackResidualSource ladder Folder Creation Failed! ";
     }
     if (layOn) {
-      if (theSiPixelFolder.setModuleFolder(iBooker, (*pxd).first, 2, isUpgrade))
-        (*pxd).second->book(pSet_, pTT, iBooker, reducedSet, 2, isUpgrade);
+      if (theSiPixelFolder.setModuleFolder(iBooker, (*pxd).first, 2, upgradePhase))
+        (*pxd).second->book(pSet_, pTT, iBooker, reducedSet, 2, upgradePhase);
       else
         throw cms::Exception("LogicError") << "SiPixelTrackResidualSource layer Folder Creation Failed! ";
     }
     if (phiOn) {
-      if (theSiPixelFolder.setModuleFolder(iBooker, (*pxd).first, 3, isUpgrade))
-        (*pxd).second->book(pSet_, pTT, iBooker, reducedSet, 3, isUpgrade);
+      if (theSiPixelFolder.setModuleFolder(iBooker, (*pxd).first, 3, upgradePhase))
+        (*pxd).second->book(pSet_, pTT, iBooker, reducedSet, 3, upgradePhase);
       else
         throw cms::Exception("LogicError") << "SiPixelTrackResidualSource phi Folder Creation Failed! ";
     }
     if (bladeOn) {
-      if (theSiPixelFolder.setModuleFolder(iBooker, (*pxd).first, 4, isUpgrade))
-        (*pxd).second->book(pSet_, pTT, iBooker, reducedSet, 4, isUpgrade);
+      if (theSiPixelFolder.setModuleFolder(iBooker, (*pxd).first, 4, upgradePhase))
+        (*pxd).second->book(pSet_, pTT, iBooker, reducedSet, 4, upgradePhase);
       else
         throw cms::Exception("LogicError") << "SiPixelTrackResidualSource Blade Folder Creation Failed! ";
     }
     if (diskOn) {
-      if (theSiPixelFolder.setModuleFolder(iBooker, (*pxd).first, 5, isUpgrade))
-        (*pxd).second->book(pSet_, pTT, iBooker, reducedSet, 5, isUpgrade);
+      if (theSiPixelFolder.setModuleFolder(iBooker, (*pxd).first, 5, upgradePhase))
+        (*pxd).second->book(pSet_, pTT, iBooker, reducedSet, 5, upgradePhase);
       else
         throw cms::Exception("LogicError") << "SiPixelTrackResidualSource Disk Folder Creation Failed! ";
     }
     if (ringOn) {
-      if (theSiPixelFolder.setModuleFolder(iBooker, (*pxd).first, 6, isUpgrade))
-        (*pxd).second->book(pSet_, pTT, iBooker, reducedSet, 6, isUpgrade);
+      if (theSiPixelFolder.setModuleFolder(iBooker, (*pxd).first, 6, upgradePhase))
+        (*pxd).second->book(pSet_, pTT, iBooker, reducedSet, 6, upgradePhase);
       else
         throw cms::Exception("LogicError") << "SiPixelTrackResidualSource Ring Folder Creation Failed! ";
     }
@@ -1268,11 +1268,11 @@ void SiPixelTrackResidualSource::analyze(const edm::Event &iEvent, const edm::Ev
                   meClSizeXOnTrack_bpix->Fill((*clust).sizeX());
                   meClSizeYOnTrack_bpix->Fill((*clust).sizeY());
                   int DBlayer;
-                  DBlayer = PixelBarrelName(DetId((*hit).geographicalId()), tTopo, isUpgrade).layerName();
+                  DBlayer = PixelBarrelName(DetId((*hit).geographicalId()), tTopo, upgradePhase).layerName();
                   float phi = clustgp.phi();
                   float z = clustgp.z();
 
-                  PixelBarrelName pbn(DetId((*hit).geographicalId()), tTopo, isUpgrade);
+                  PixelBarrelName pbn(DetId((*hit).geographicalId()), tTopo, upgradePhase);
                   int ladder = pbn.ladderName();
                   int module = pbn.moduleName();
 
@@ -1310,7 +1310,7 @@ void SiPixelTrackResidualSource::analyze(const edm::Event &iEvent, const edm::Ev
                   meClSizeXOnTrack_fpix->Fill((*clust).sizeX());
                   meClSizeYOnTrack_fpix->Fill((*clust).sizeY());
                   int DBdisk = 0;
-                  DBdisk = PixelEndcapName(DetId((*hit).geographicalId()), tTopo, isUpgrade).diskName();
+                  DBdisk = PixelEndcapName(DetId((*hit).geographicalId()), tTopo, upgradePhase).diskName();
                   float x = clustgp.x();
                   float y = clustgp.y();
                   float z = clustgp.z();
@@ -1435,7 +1435,7 @@ void SiPixelTrackResidualSource::analyze(const edm::Event &iEvent, const edm::Ev
               meClSizeYNotOnTrack_bpix->Fill((*di).sizeY());
               meClChargeNotOnTrack_bpix->Fill((*di).charge() / 1000);
               barrelotherclusters++;
-              int DBlayer = PixelBarrelName(DetId(detId), tTopo, isUpgrade).layerName();
+              int DBlayer = PixelBarrelName(DetId(detId), tTopo, upgradePhase).layerName();
               float phi = clustgp.phi();
               // float r = clustgp.perp();
               z = clustgp.z();
@@ -1456,7 +1456,7 @@ void SiPixelTrackResidualSource::analyze(const edm::Event &iEvent, const edm::Ev
               meClSizeYNotOnTrack_fpix->Fill((*di).sizeY());
               meClChargeNotOnTrack_fpix->Fill((*di).charge() / 1000);
               endcapotherclusters++;
-              int DBdisk = PixelEndcapName(DetId(detId), tTopo, isUpgrade).diskName();
+              int DBdisk = PixelEndcapName(DetId(detId), tTopo, upgradePhase).diskName();
               float x = clustgp.x();
               float y = clustgp.y();
               z = clustgp.z();
@@ -1528,7 +1528,7 @@ void SiPixelTrackResidualSource::analyze(const edm::Event &iEvent, const edm::Ev
           meNClustersOnTrack_bpix->Fill(nofclOnTrack);
         if (nofclOffTrack != 0)
           meNClustersNotOnTrack_bpix->Fill(nofclOffTrack);
-        int DBlayer = PixelBarrelName(DetId(detId), tTopo, isUpgrade).layerName();
+        int DBlayer = PixelBarrelName(DetId(detId), tTopo, upgradePhase).layerName();
         for (int i = 0; i < noOfLayers; i++) {
           if (DBlayer == i + 1) {
             if (nofclOnTrack != 0)
@@ -1602,11 +1602,11 @@ void SiPixelTrackResidualSource::getrococcupancy(DetId detId,
     // Look at digis now
     edm::DetSet<PixelDigi>::const_iterator pxdi;
     for (pxdi = ipxsearch->begin(); pxdi != ipxsearch->end(); pxdi++) {
-      bool isHalfModule = PixelBarrelName(DetId(detId), tTopo, isUpgrade).isHalfModule();
-      int DBlayer = PixelBarrelName(DetId(detId), tTopo, isUpgrade).layerName();
-      int DBmodule = PixelBarrelName(DetId(detId), tTopo, isUpgrade).moduleName();
-      int DBladder = PixelBarrelName(DetId(detId), tTopo, isUpgrade).ladderName();
-      int DBshell = PixelBarrelName(DetId(detId), tTopo, isUpgrade).shell();
+      bool isHalfModule = PixelBarrelName(DetId(detId), tTopo, upgradePhase).isHalfModule();
+      int DBlayer = PixelBarrelName(DetId(detId), tTopo, upgradePhase).layerName();
+      int DBmodule = PixelBarrelName(DetId(detId), tTopo, upgradePhase).moduleName();
+      int DBladder = PixelBarrelName(DetId(detId), tTopo, upgradePhase).ladderName();
+      int DBshell = PixelBarrelName(DetId(detId), tTopo, upgradePhase).shell();
 
       // add sign to the modules
       if (DBshell == 1 || DBshell == 2) {

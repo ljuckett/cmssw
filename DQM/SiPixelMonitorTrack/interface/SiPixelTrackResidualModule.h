@@ -39,7 +39,7 @@ public:
             DQMStore::IBooker &,
             bool reducedSet = true,
             int type = 0,
-            bool isUpgrade = false);
+            int upgradePhase = 0);
   void fill(const Measurement2DVector &,
             bool reducedSet = true,
             bool modon = true,

@@ -58,7 +58,7 @@ SiPixelHitEfficiencySource::SiPixelHitEfficiencySource(const edm::ParameterSet &
       ringOn(pSet.getUntrackedParameter<bool>("ringOn", false)),
       bladeOn(pSet.getUntrackedParameter<bool>("bladeOn", false)),
       diskOn(pSet.getUntrackedParameter<bool>("diskOn", false)),
-      isUpgrade(pSet.getUntrackedParameter<bool>("isUpgrade", false))
+      upgradePhase(pSet.getUntrackedParameter<int>("upgradePhase", 0))
 // updateEfficiencies(
 // pSet.getUntrackedParameter<bool>("updateEfficiencies",false) )
 {
@@ -191,44 +191,44 @@ void SiPixelHitEfficiencySource::bookHistograms(DQMStore::IBooker &iBooker,
        pxd != theSiPixelStructure.end();
        pxd++) {
     if (modOn) {
-      if (theSiPixelFolder.setModuleFolder(iBooker, (*pxd).first, 0, isUpgrade))
-        (*pxd).second->book(pSet_, pTT, iBooker, 0, isUpgrade);
+      if (theSiPixelFolder.setModuleFolder(iBooker, (*pxd).first, 0, upgradePhase))
+        (*pxd).second->book(pSet_, pTT, iBooker, 0, upgradePhase);
       else
         throw cms::Exception("LogicError") << "SiPixelHitEfficiencySource Folder Creation Failed! ";
     }
     if (ladOn) {
-      if (theSiPixelFolder.setModuleFolder(iBooker, (*pxd).first, 1, isUpgrade))
-        (*pxd).second->book(pSet_, pTT, iBooker, 1, isUpgrade);
+      if (theSiPixelFolder.setModuleFolder(iBooker, (*pxd).first, 1, upgradePhase))
+        (*pxd).second->book(pSet_, pTT, iBooker, 1, upgradePhase);
       else
         throw cms::Exception("LogicError") << "SiPixelHitEfficiencySource ladder Folder Creation Failed! ";
     }
     if (layOn) {
-      if (theSiPixelFolder.setModuleFolder(iBooker, (*pxd).first, 2, isUpgrade))
-        (*pxd).second->book(pSet_, pTT, iBooker, 2, isUpgrade);
+      if (theSiPixelFolder.setModuleFolder(iBooker, (*pxd).first, 2, upgradePhase))
+        (*pxd).second->book(pSet_, pTT, iBooker, 2, upgradePhase);
       else
         throw cms::Exception("LogicError") << "SiPixelHitEfficiencySource layer Folder Creation Failed! ";
     }
     if (phiOn) {
-      if (theSiPixelFolder.setModuleFolder(iBooker, (*pxd).first, 3, isUpgrade))
-        (*pxd).second->book(pSet_, pTT, iBooker, 3, isUpgrade);
+      if (theSiPixelFolder.setModuleFolder(iBooker, (*pxd).first, 3, upgradePhase))
+        (*pxd).second->book(pSet_, pTT, iBooker, 3, upgradePhase);
       else
         throw cms::Exception("LogicError") << "SiPixelHitEfficiencySource phi Folder Creation Failed! ";
     }
     if (bladeOn) {
-      if (theSiPixelFolder.setModuleFolder(iBooker, (*pxd).first, 4, isUpgrade))
-        (*pxd).second->book(pSet_, pTT, iBooker, 4, isUpgrade);
+      if (theSiPixelFolder.setModuleFolder(iBooker, (*pxd).first, 4, upgradePhase))
+        (*pxd).second->book(pSet_, pTT, iBooker, 4, upgradePhase);
       else
         throw cms::Exception("LogicError") << "SiPixelHitEfficiencySource Blade Folder Creation Failed! ";
     }
     if (diskOn) {
-      if (theSiPixelFolder.setModuleFolder(iBooker, (*pxd).first, 5, isUpgrade))
-        (*pxd).second->book(pSet_, pTT, iBooker, 5, isUpgrade);
+      if (theSiPixelFolder.setModuleFolder(iBooker, (*pxd).first, 5, upgradePhase))
+        (*pxd).second->book(pSet_, pTT, iBooker, 5, upgradePhase);
       else
         throw cms::Exception("LogicError") << "SiPixelHitEfficiencySource Disk Folder Creation Failed! ";
     }
     if (ringOn) {
-      if (theSiPixelFolder.setModuleFolder(iBooker, (*pxd).first, 6, isUpgrade))
-        (*pxd).second->book(pSet_, pTT, iBooker, 6, isUpgrade);
+      if (theSiPixelFolder.setModuleFolder(iBooker, (*pxd).first, 6, upgradePhase))
+        (*pxd).second->book(pSet_, pTT, iBooker, 6, upgradePhase);
       else
         throw cms::Exception("LogicError") << "SiPixelHitEfficiencySource Ring Folder Creation Failed! ";
     }
@@ -395,7 +395,7 @@ void SiPixelHitEfficiencySource::analyze(const edm::Event &iEvent, const edm::Ev
 
       if (testSubDetID == PixelSubdetector::PixelBarrel) {
         isBpixtrack = true;
-        hit_layer = PixelBarrelName(hit_detId, pTT, isUpgrade).layerName();
+        hit_layer = PixelBarrelName(hit_detId, pTT, upgradePhase).layerName();
 
         hit_ladder = PXBDetId(hit_detId).ladder();
         hit_mod = PXBDetId(hit_detId).module();
@@ -409,7 +409,7 @@ void SiPixelHitEfficiencySource::analyze(const edm::Event &iEvent, const edm::Ev
       }
       if (testSubDetID == PixelSubdetector::PixelEndcap) {
         isFpixtrack = true;
-        hit_disk = PixelEndcapName(hit_detId, pTT, isUpgrade).diskName();
+        hit_disk = PixelEndcapName(hit_detId, pTT, upgradePhase).diskName();
 
         if (hit_disk == 1)
           D1hits++;
@@ -581,13 +581,13 @@ void SiPixelHitEfficiencySource::analyze(const edm::Event &iEvent, const edm::Ev
           const SiPixelRecHit *pixhit = dynamic_cast<const SiPixelRecHit *>(hit->hit());
 
           if (IntSubDetID == PixelSubdetector::PixelBarrel) {  // it's a BPIX hit
-            layer = PixelBarrelName(hit_detId, pTT, isUpgrade).layerName();
-            isHalfModule = PixelBarrelName(hit_detId, pTT, isUpgrade).isHalfModule();
+            layer = PixelBarrelName(hit_detId, pTT, upgradePhase).layerName();
+            isHalfModule = PixelBarrelName(hit_detId, pTT, upgradePhase).isHalfModule();
 
             if (hit->isValid()) {  // fill the cluster probability in barrel
               bool plus = true;
-              if ((PixelBarrelName(hit_detId, pTT, isUpgrade).shell() == PixelBarrelName::Shell::mO) ||
-                  (PixelBarrelName(hit_detId, pTT, isUpgrade).shell() == PixelBarrelName::Shell::mI))
+              if ((PixelBarrelName(hit_detId, pTT, upgradePhase).shell() == PixelBarrelName::Shell::mO) ||
+                  (PixelBarrelName(hit_detId, pTT, upgradePhase).shell() == PixelBarrelName::Shell::mI))
                 plus = false;
               double clusterProbability = pixhit->clusterProbability(0);
               if (clusterProbability != 0)
@@ -595,14 +595,14 @@ void SiPixelHitEfficiencySource::analyze(const edm::Event &iEvent, const edm::Ev
             }
 
           } else if (IntSubDetID == PixelSubdetector::PixelEndcap) {  // it's an FPIX hit
-            disk = PixelEndcapName(hit_detId, pTT, isUpgrade).diskName();
-            panel = PixelEndcapName(hit_detId, pTT, isUpgrade).pannelName();
-            module = PixelEndcapName(hit_detId, pTT, isUpgrade).plaquetteName();
+            disk = PixelEndcapName(hit_detId, pTT, upgradePhase).diskName();
+            panel = PixelEndcapName(hit_detId, pTT, upgradePhase).pannelName();
+            module = PixelEndcapName(hit_detId, pTT, upgradePhase).plaquetteName();
 
             if (hit->isValid()) {
               bool plus = true;
-              if ((PixelEndcapName(hit_detId, pTT, isUpgrade).halfCylinder() == PixelEndcapName::HalfCylinder::mO) ||
-                  (PixelEndcapName(hit_detId, pTT, isUpgrade).halfCylinder() == PixelEndcapName::HalfCylinder::mI))
+              if ((PixelEndcapName(hit_detId, pTT, upgradePhase).halfCylinder() == PixelEndcapName::HalfCylinder::mO) ||
+                  (PixelEndcapName(hit_detId, pTT, upgradePhase).halfCylinder() == PixelEndcapName::HalfCylinder::mI))
                 plus = false;
               double clusterProbability = pixhit->clusterProbability(0);
               if (clusterProbability != 0)
