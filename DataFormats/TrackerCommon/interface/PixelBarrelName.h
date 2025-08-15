@@ -18,17 +18,17 @@ public:
   enum Shell { mO = 1, mI = 2, pO = 3, pI = 4 };
 
   /// ctor from DetId
-  PixelBarrelName(const DetId&, const TrackerTopology* tt, bool phase = false);
+  PixelBarrelName(const DetId&, const TrackerTopology* tt, int phase = 0);
 
   // do not use, works only for phase0 and old pixel classes
-  PixelBarrelName(const DetId&, bool phase = false);
+  PixelBarrelName(const DetId&, int phase = 0);
 
   /// ctor for defined name with dummy parameters
-  PixelBarrelName(Shell shell = mO, int layer = 0, int module = 0, int ladder = 0, bool phase = false)
-      : PixelModuleName(true), thePart(shell), theLayer(layer), theModule(module), theLadder(ladder), phase1(phase) {}
+  PixelBarrelName(Shell shell = mO, int layer = 0, int module = 0, int ladder = 0, int phase = 0)
+      : PixelModuleName(true), thePart(shell), theLayer(layer), theModule(module), theLadder(ladder), upgradePhase(phase) {}
 
   /// ctor from name string
-  PixelBarrelName(std::string name, bool phase = false);
+  PixelBarrelName(std::string name, int phase = 0);
 
   ~PixelBarrelName() override {}
 
@@ -71,7 +71,7 @@ public:
 private:
   Shell thePart;
   int theLayer, theModule, theLadder;
-  bool phase1;
+  int upgradePhase;
 };
 
 std::ostream& operator<<(std::ostream& out, const PixelBarrelName::Shell& t);

@@ -18,21 +18,21 @@ public:
   enum HalfCylinder { mO = 1, mI = 2, pO = 3, pI = 4 };
 
   /// ctor from DetId
-  PixelEndcapName(const DetId&, bool phase = false);
-  PixelEndcapName(const DetId&, const TrackerTopology* tt, bool phase = false);
+  PixelEndcapName(const DetId&, int phase = 0);
+  PixelEndcapName(const DetId&, const TrackerTopology* tt, int phase = 0);
 
   /// ctor for defined name
-  PixelEndcapName(HalfCylinder part = mO, int disk = 0, int blade = 0, int pannel = 0, int plaq = 0, bool phase = false)
+  PixelEndcapName(HalfCylinder part = mO, int disk = 0, int blade = 0, int pannel = 0, int plaq = 0, int phase = 0)
       : PixelModuleName(false),
         thePart(part),
         theDisk(disk),
         theBlade(blade),
         thePannel(pannel),
         thePlaquette(plaq),
-        phase1(phase) {}
+        upgradePhase(phase) {}
 
   /// ctor from name string
-  PixelEndcapName(std::string name, bool phase = false);
+  PixelEndcapName(std::string name, int phase = 0);
 
   ~PixelEndcapName() override {}
 
@@ -73,7 +73,7 @@ public:
 private:
   HalfCylinder thePart;
   int theDisk, theBlade, thePannel, thePlaquette;
-  bool phase1;
+  int upgradePhase;
 };
 
 std::ostream& operator<<(std::ostream& out, const PixelEndcapName::HalfCylinder& t);
