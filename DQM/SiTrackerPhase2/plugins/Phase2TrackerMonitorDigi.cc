@@ -73,8 +73,10 @@ public:
     MonitorElement* FractionOfOvTBitsVsEta{nullptr};
     MonitorElement* EtaOccupancyProfP{nullptr};
     MonitorElement* EtaOccupancyProfS{nullptr};
+    MonitorElement* NumberOfDigisPerChannel{nullptr};
     unsigned int nDigiPerLayer{0};
     unsigned int nHitDetsPerLayer{0};
+    unsigned int nDigiPerChannel{0};
   };
 
   struct Ph2DigiCluster {
@@ -617,6 +619,19 @@ void Phase2TrackerMonitorDigi::bookLayerHistos(DQMStore::IBooker& ibooker, unsig
                                                     Parameters.getParameter<int32_t>("Nybins"),
                                                     Parameters.getParameter<double>("ymin"),
                                                     Parameters.getParameter<double>("ymax"));
+
+      Parameters = config_.getParameter<edm::ParameterSet>("NumberOfDigisPerChannel");
+      HistoName.str("");
+      HistoName << "NumberOfDigisPerChannel";
+      if (Parameters.getParameter<bool>("switch"))
+	      local_mes.NumberOfDigisPerChannel = ibooker.book2D(HistoName.str(),
+			      					 HistoName.str(),
+								 Parameters.getParameter<int32_t>("Nxbins"),
+								 Parameters.getParameter<double>("xmin"),
+								 Parameters.getParameter<double>("xmax"),
+								 Parameters.getParameter<int32_t>("Nybins"),
+                                                                 Parameters.getParameter<double>("ymin"),
+                                                                 Parameters.getParameter<double>("ymax"));
 
       // For standalone clusteriser
       if (clsFlag_) {

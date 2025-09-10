@@ -131,7 +131,17 @@ digiMon = DQMEDAnalyzer('Phase2TrackerMonitorDigi',
                             ymin   = cms.double(0.),
                             ymax   = cms.double(1250.),
                             switch = cms.bool(True)
+                        ),
+                        NumberOfDigisPerChannel = cms.PSet(
+                            Nxbins = cms.int32(508),
+                            xmin   = cms.double(0.5),
+                            xmax   = cms.double(1016.5),
+                            Nybins = cms.int32(2),
+                            ymin   = cms.double(0.5),
+                            ymax   = cms.double(2.5),
+                            switch = cms.bool(True)
                         )
+
                     )
 
 from Configuration.ProcessModifiers.premix_stage2_cff import premix_stage2
