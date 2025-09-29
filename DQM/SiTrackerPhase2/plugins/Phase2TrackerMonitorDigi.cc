@@ -73,10 +73,9 @@ public:
     MonitorElement* FractionOfOvTBitsVsEta{nullptr};
     MonitorElement* EtaOccupancyProfP{nullptr};
     MonitorElement* EtaOccupancyProfS{nullptr};
-    MonitorElement* NumberOfDigisPerChannel{nullptr};
+    std::vector<MonitorElement*> NumberOfDigisPerChannel {77, nullptr};
     unsigned int nDigiPerLayer{0};
     unsigned int nHitDetsPerLayer{0};
-    unsigned int nDigiPerChannel{0};
   };
 
   struct Ph2DigiCluster {
@@ -285,6 +284,7 @@ void Phase2TrackerMonitorDigi::fillOTDigiHistos(const edm::Handle<edm::DetSetVec
     DetId detId(rawid);
     LogDebug("Phase2TrackerMonitorDigi") << " Det Id = " << rawid;
     int layer = tTopo_->getOTLayerNumber(rawid);
+    int module = tTopo_->module(rawid);
     if (layer < 0)
       continue;
     std::string key = getHistoId(rawid, pixelFlag_);
@@ -328,6 +328,15 @@ void Phase2TrackerMonitorDigi::fillOTDigiHistos(const edm::Handle<edm::DetSetVec
       if (di->overThreshold())
         frac_ot++;
       LogDebug("Phase2TrackerMonitorDigi") << "  column " << col << " row " << row << std::dec << std::endl;
+      if (nColumns <= 2 && local_mes.NumberOfDigisPerChannel[module]){
+
+	      int upDownLeftRight = col+1; //Trying to get upper/lower left/right sensor
+	      if (tTopo_->isLower(rawid)){
+		      upDownLeftRight = upDownLeftRight * -1;
+	      }
+
+	      local_mes.NumberOfDigisPerChannel[module]->Fill((row+1), upDownLeftRight);
+      }
       if (nColumns > 2 && local_mes.PositionOfDigisP)
         local_mes.PositionOfDigisP->Fill(row + 1, col + 1);
       if (nColumns <= 2 && local_mes.PositionOfDigisS)
@@ -610,7 +619,7 @@ void Phase2TrackerMonitorDigi::bookLayerHistos(DQMStore::IBooker& ibooker, unsig
       Parameters = config_.getParameter<edm::ParameterSet>("PositionOfDigisSH");
       HistoName.str("");
       HistoName << "PositionOfDigisS";
-      if (Parameters.getParameter<bool>("switch"))
+      if (Parameters.getParameter<bool>("switch")) 
         local_mes.PositionOfDigisS = ibooker.book2D(HistoName.str(),
                                                     HistoName.str(),
                                                     Parameters.getParameter<int32_t>("Nxbins"),
@@ -620,18 +629,6 @@ void Phase2TrackerMonitorDigi::bookLayerHistos(DQMStore::IBooker& ibooker, unsig
                                                     Parameters.getParameter<double>("ymin"),
                                                     Parameters.getParameter<double>("ymax"));
 
-      Parameters = config_.getParameter<edm::ParameterSet>("NumberOfDigisPerChannel");
-      HistoName.str("");
-      HistoName << "NumberOfDigisPerChannel";
-      if (Parameters.getParameter<bool>("switch"))
-	      local_mes.NumberOfDigisPerChannel = ibooker.book2D(HistoName.str(),
-			      					 HistoName.str(),
-								 Parameters.getParameter<int32_t>("Nxbins"),
-								 Parameters.getParameter<double>("xmin"),
-								 Parameters.getParameter<double>("xmax"),
-								 Parameters.getParameter<int32_t>("Nybins"),
-                                                                 Parameters.getParameter<double>("ymin"),
-                                                                 Parameters.getParameter<double>("ymax"));
 
       // For standalone clusteriser
       if (clsFlag_) {
@@ -722,6 +719,27 @@ void Phase2TrackerMonitorDigi::bookLayerHistos(DQMStore::IBooker& ibooker, unsig
                                                       Parameters.getParameter<double>("ymax"));
       }
     }
+    // Plots for 2S sensors
+    if (!isPtypeSensor) {
+      Parameters = config_.getParameter<edm::ParameterSet>("NumberOfDigisPerChannel");
+      std::string name = "";
+      if (Parameters.getParameter<bool>("switch")) {
+        for (int moduleNum = 1; moduleNum < (int) local_mes.NumberOfDigisPerChannel.size(); moduleNum++) {
+          HistoName.str("");
+          name = "NumberOfDigisPerChannel Module" + std::to_string(moduleNum);
+          HistoName << name;
+          local_mes.NumberOfDigisPerChannel[moduleNum] = ibooker.book2D(HistoName.str(),
+                                                                        HistoName.str(),
+                                                                        Parameters.getParameter<int32_t>("Nxbins"),
+                                                                        Parameters.getParameter<double>("xmin"),
+                                                                        Parameters.getParameter<double>("xmax"),
+                                                                        Parameters.getParameter<int32_t>("Nybins"),
+                                                                        Parameters.getParameter<double>("ymin"),
+                                                                        Parameters.getParameter<double>("ymax"));
+        }
+      }
+    }
+
 
     // Plots for Standalone clusters (Can be switched on from configs)
     if (clsFlag_) {

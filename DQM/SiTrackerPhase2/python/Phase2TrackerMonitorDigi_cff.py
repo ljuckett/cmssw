@@ -99,8 +99,8 @@ otDigiMon = digiMon.clone(
         Nxbins = 508,
         xmin = 0.5,
         xmax = 1016.5,
-        Nybins = 2,
-        ymin = 0.5,
+        Nybins = 5,
+        ymin = -2.5,
         ymax = 2.5,
         switch = True
     )
