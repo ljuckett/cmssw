@@ -58,6 +58,9 @@ private:
     MonitorElement* ClusterSize_S = nullptr;
     MonitorElement* XYGlobalPositionMap_S = nullptr;
     MonitorElement* XYLocalPositionMap_S = nullptr;
+    
+    std::vector<MonitorElement*> PositionOfClusters_Module {77, nullptr};
+    std::vector<MonitorElement*> PositionOfClusters_Ladder {77, nullptr};
   };
   MonitorElement* numberClusters_;
   MonitorElement* globalXY_P_;
@@ -123,6 +126,8 @@ void Phase2OTMonitorCluster::analyze(const edm::Event& iEvent, const edm::EventS
     if (!geomDetUnit)
       continue;
 
+    unsigned int module = tTopo_->module(rawid);
+
     std::string folderkey = phase2tkutil::getOTHistoId(detId, tTopo_);
 
     TrackerGeometry::ModuleType mType = tkGeom_->getDetectorType(detId);
@@ -171,6 +176,25 @@ void Phase2OTMonitorCluster::analyze(const edm::Event& iEvent, const edm::EventS
 
         if (local_mes.XYGlobalPositionMap_S != nullptr)  //make this optional
           local_mes.XYGlobalPositionMap_S->Fill(gx, gy);
+      }
+      if (mType == TrackerGeometry::ModuleType::Ph2SS){
+
+	if (local_mes.PositionOfClusters_Module[module]){
+
+              int upDownLeftRight = clusterItr.column()+1; // get upper/lower half-module
+              if (tTopo_->isLower(rawid)){
+                      upDownLeftRight = upDownLeftRight * -1;
+              }
+	      local_mes.PositionOfClusters_Module[module]->setOption("z");
+              local_mes.PositionOfClusters_Module[module]->Fill(clusterItr.center()+1, upDownLeftRight);
+
+	      if (tTopo_->getOTLayerNumber(rawid) < 100){
+		      unsigned int ladder = tTopo_->tobRod(rawid);
+		      local_mes.PositionOfClusters_Ladder[ladder]->setOption("z");
+		      local_mes.PositionOfClusters_Ladder[ladder]->Fill(module, upDownLeftRight);
+	      }
+
+	}
       }
     }
   }
@@ -263,6 +287,62 @@ void Phase2OTMonitorCluster::bookLayerHistos(DQMStore::IBooker& ibooker, uint32_
     local_mes.XYLocalPositionMap_S =
         phase2tkutil::book2DFromPSet(config_.getParameter<edm::ParameterSet>("LocalPositionXY_S"), ibooker);
 
+    if (mType == TrackerGeometry::ModuleType::Ph2SS){
+	    std::ostringstream HistoName; 
+	    std::ostringstream HistoTitle;
+	    std::string name;
+	    std::string title;
+	    
+	    //Barrel Layers 4-6 have mod num 1-24
+	    //TEDD1 R11 1-52 R12 1-60 R13 1-64 R14 1-72 R15 1-76
+	    //TEDD2 R8 ??-?? R9 ??-?? R10 ??-?? R11 ??-??
+	    //for now just check if barrel or not and book either 24 or 76 hists
+	    int nModules = (tTopo_->getOTLayerNumber(det_id) > 100 ? 77 : 25);
+	    int nLadders = 0;
+	    if (tTopo_->getOTLayerNumber(det_id) == 4){
+		    nLadders = 49;
+	    }
+	    if (tTopo_->getOTLayerNumber(det_id) == 5){
+		    nLadders = 61;
+	    }
+	    if (tTopo_->getOTLayerNumber(det_id) == 6){
+		    nLadders = 77;
+	    }
+	    std::cout << nLadders << std::endl;
+
+	    for (int moduleNum = 1; moduleNum < nModules; moduleNum++) {
+		    HistoName.str("");
+		    HistoTitle.str("");
+		    name = "PositionOfClusters_Module" + std::to_string(moduleNum);
+		    title = name + ";strips;half-module;";
+		    HistoName << name;
+		    HistoTitle << title;
+		    local_mes.PositionOfClusters_Module[moduleNum]  = ibooker.book2D(HistoName.str(),
+				    HistoTitle.str(),
+                                    config_.getParameter<edm::ParameterSet>("PositionOfClusters_2S").getParameter<int32_t>("NxBins"),
+				    config_.getParameter<edm::ParameterSet>("PositionOfClusters_2S").getParameter<double>("xmin"),
+				    config_.getParameter<edm::ParameterSet>("PositionOfClusters_2S").getParameter<double>("xmax"),
+				    config_.getParameter<edm::ParameterSet>("PositionOfClusters_2S").getParameter<int32_t>("NyBins"),
+				    config_.getParameter<edm::ParameterSet>("PositionOfClusters_2S").getParameter<double>("ymin"),
+				    config_.getParameter<edm::ParameterSet>("PositionOfClusters_2S").getParameter<double>("ymax"));
+	    }
+	    for (int ladderNum = 1; ladderNum < nLadders; ladderNum++) {
+		    	HistoName.str("");
+                    	HistoTitle.str("");
+                    	name = "PositionOfClusters_Ladder" + std::to_string(ladderNum);
+                    	title = name + ";;half-module;";
+                    	HistoName << name;
+                    	HistoTitle << title;
+                    	local_mes.PositionOfClusters_Ladder[ladderNum]  = ibooker.book2D(HistoName.str(),
+				    HistoTitle.str(),
+                                    config_.getParameter<edm::ParameterSet>("PositionOfClusters_Ladder").getParameter<int32_t>("NxBins"),
+                                    config_.getParameter<edm::ParameterSet>("PositionOfClusters_Ladder").getParameter<double>("xmin"),
+                                    config_.getParameter<edm::ParameterSet>("PositionOfClusters_Ladder").getParameter<double>("xmax"),
+                                    config_.getParameter<edm::ParameterSet>("PositionOfClusters_Ladder").getParameter<int32_t>("NyBins"),
+                                    config_.getParameter<edm::ParameterSet>("PositionOfClusters_Ladder").getParameter<double>("ymin"),
+                                    config_.getParameter<edm::ParameterSet>("PositionOfClusters_Ladder").getParameter<double>("ymax"));
+	    }
+    }
     layerMEs_.emplace(folderName, local_mes);
   }  //if block layerME find
 }
@@ -426,6 +506,34 @@ void Phase2OTMonitorCluster::fillDescriptions(edm::ConfigurationDescriptions& de
     psd0.add<bool>("switch", true);
     desc.add<edm::ParameterSetDescription>("LocalPositionXY_S", psd0);
   }
+  {
+	  edm::ParameterSetDescription psd0;
+	  psd0.add<std::string>("name", "PositionOfClusters_2S");
+	  psd0.add<std::string>("title", "PositionOfClusters_2S;strip ;half-sensor ;");
+	  psd0.add<int>("NxBins", 1016);
+	  psd0.add<double>("xmin", 0.5);
+	  psd0.add<double>("xmax", 1016.5);
+	  psd0.add<int>("NyBins", 5);
+	  psd0.add<double>("ymin", -2.5);
+	  psd0.add<double>("ymax", 2.5);
+	  psd0.add<bool>("switch", true);
+	  desc.add<edm::ParameterSetDescription>("PositionOfClusters_2S", psd0);
+  }
+  {
+          edm::ParameterSetDescription psd0;
+          psd0.add<std::string>("name", "PositionOfClusters_Ladder");
+          psd0.add<std::string>("title", "PositionOfClusters_Ladder; ;half-sensor ;");
+          psd0.add<int>("NxBins", 24);
+          psd0.add<double>("xmin", 0.5);
+          psd0.add<double>("xmax", 24.5);
+          psd0.add<int>("NyBins", 5);
+          psd0.add<double>("ymin", -2.5);
+          psd0.add<double>("ymax", 2.5);
+          psd0.add<bool>("switch", true);
+          desc.add<edm::ParameterSetDescription>("PositionOfClusters_Ladder", psd0);
+  }
+
+
 
   desc.add<std::string>("TopFolderName", "TrackerPhase2OTCluster");
   desc.add<edm::InputTag>("clusterSrc", edm::InputTag("siPhase2Clusters"));
