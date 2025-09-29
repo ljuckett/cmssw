@@ -308,7 +308,6 @@ void Phase2OTMonitorCluster::bookLayerHistos(DQMStore::IBooker& ibooker, uint32_
 	    if (tTopo_->getOTLayerNumber(det_id) == 6){
 		    nLadders = 77;
 	    }
-	    std::cout << nLadders << std::endl;
 
 	    for (int moduleNum = 1; moduleNum < nModules; moduleNum++) {
 		    HistoName.str("");
