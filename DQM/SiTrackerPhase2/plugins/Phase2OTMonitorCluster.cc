@@ -185,12 +185,14 @@ void Phase2OTMonitorCluster::analyze(const edm::Event& iEvent, const edm::EventS
               if (tTopo_->isLower(rawid)){
                       upDownLeftRight = upDownLeftRight * -1;
               }
+	      local_mes.PositionOfClusters_Module[module]->getTH2F()->SetStats(0);
 	      local_mes.PositionOfClusters_Module[module]->setOption("z");
               local_mes.PositionOfClusters_Module[module]->Fill(clusterItr.center()+1, upDownLeftRight);
 
 	      if (tTopo_->getOTLayerNumber(rawid) < 100){
 		      unsigned int ladder = tTopo_->tobRod(rawid);
 		      local_mes.PositionOfClusters_Ladder[ladder]->setOption("z");
+		      local_mes.PositionOfClusters_Ladder[ladder]->getTH2F()->SetStats(0);
 		      local_mes.PositionOfClusters_Ladder[ladder]->Fill(module, upDownLeftRight);
 	      }
 
