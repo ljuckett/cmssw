@@ -334,7 +334,8 @@ void Phase2TrackerMonitorDigi::fillOTDigiHistos(const edm::Handle<edm::DetSetVec
 	      if (tTopo_->isLower(rawid)){
 		      upDownLeftRight = upDownLeftRight * -1;
 	      }
-
+	      local_mes.NumberOfDigisPerChannel[module]->getTH2F()->SetStats(0);
+	      local_mes.NumberOfDigisPerChannel[module]->setOption("z");
 	      local_mes.NumberOfDigisPerChannel[module]->Fill((row+1), upDownLeftRight);
       }
       if (nColumns > 2 && local_mes.PositionOfDigisP)
@@ -723,8 +724,9 @@ void Phase2TrackerMonitorDigi::bookLayerHistos(DQMStore::IBooker& ibooker, unsig
     if (!isPtypeSensor) {
       Parameters = config_.getParameter<edm::ParameterSet>("NumberOfDigisPerChannel");
       std::string name = "";
+      int nModules = (tTopo_->getOTLayerNumber(det_id) > 100 ? 77 : 25);
       if (Parameters.getParameter<bool>("switch")) {
-        for (int moduleNum = 1; moduleNum < (int) local_mes.NumberOfDigisPerChannel.size(); moduleNum++) {
+        for (int moduleNum = 1; moduleNum < nModules; moduleNum++) {
           HistoName.str("");
           name = "NumberOfDigisPerChannel Module" + std::to_string(moduleNum);
           HistoName << name;
