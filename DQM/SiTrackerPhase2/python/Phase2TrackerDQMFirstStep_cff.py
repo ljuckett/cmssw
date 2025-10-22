@@ -9,10 +9,10 @@ from DQM.SiTrackerPhase2.Phase2OTMonitorTTTrack_cfi import *
 from DQM.SiTrackerPhase2.Phase2OTMonitorTTStub_cfi import *
 from DQM.SiTrackerPhase2.Phase2OTMonitorTTCluster_cfi import *
 
-trackerphase2DQMSource = cms.Sequence( pixDigiMon 
-                                       + otDigiMon
-                                       +rechitMonitorIT
-                                       + clusterMonitorIT
+trackerphase2DQMSource = cms.Sequence( #pixDigiMon 
+                                        otDigiMon
+                                       #+rechitMonitorIT
+                                       #+ clusterMonitorIT
                                        + clusterMonitorOT
                                        + Phase2OTMonitorTTCluster
                                        + Phase2OTMonitorTTStub
