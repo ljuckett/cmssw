@@ -70,11 +70,11 @@ trackerphase2ValidationHarvesting = cms.Sequence(Phase2ITRechitHarvester
 from Configuration.ProcessModifiers.vectorHits_cff import vectorHits
 vectorHits.toReplaceWith(trackerphase2ValidationHarvesting, trackerphase2ValidationHarvesting.copyAndExclude([Phase2OTTrackingRechitHarvester_PS,Phase2OTTrackingRechitHarvester_2S]))
 
-trackerphase2ValidationHarvesting_standalone = cms.Sequence(Phase2ITRechitHarvester
-                                                            * Phase2ITtrackingrechitHarvester
-                                                            * Phase2OTRechitHarvester_PS
-                                                            * Phase2OTRechitHarvester_2S
-                                                            * Phase2OTTrackingRechitHarvester_PS
-                                                            * Phase2OTTrackingRechitHarvester_2S
-                                                            * Phase2OTHarvestReconstruction
+trackerphase2ValidationHarvesting_standalone = cms.Sequence(#Phase2ITRechitHarvester
+                                                            #* Phase2ITtrackingrechitHarvester
+                                                            #* Phase2OTRechitHarvester_PS
+                                                            #* Phase2OTRechitHarvester_2S
+                                                            #* Phase2OTTrackingRechitHarvester_PS
+                                                            #* Phase2OTTrackingRechitHarvester_2S
+                                                             Phase2OTHarvestReconstruction
 )
