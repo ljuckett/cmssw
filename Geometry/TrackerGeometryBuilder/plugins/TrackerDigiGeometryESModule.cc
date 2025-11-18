@@ -61,7 +61,7 @@ private:
 TrackerDigiGeometryESModule::TrackerDigiGeometryESModule(const edm::ParameterSet& p)
     : alignmentsLabel_(p.getParameter<std::string>("alignmentsLabel")),
       myLabel_(p.getParameter<std::string>("appendToDataLabel")),
-      applyAlignment_(false) {
+      applyAlignment_(p.getParameter<bool>("applyAlignment")) {
   {
     auto cc = setWhatProduced(this);
     const edm::ESInputTag kEmptyTag;
