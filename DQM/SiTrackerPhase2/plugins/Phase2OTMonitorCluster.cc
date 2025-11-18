@@ -299,17 +299,18 @@ void Phase2OTMonitorCluster::bookLayerHistos(DQMStore::IBooker& ibooker, uint32_
 	    //TEDD1 R11 1-52 R12 1-60 R13 1-64 R14 1-72 R15 1-76
 	    //TEDD2 R8 ??-?? R9 ??-?? R10 ??-?? R11 ??-??
 	    //for now just check if barrel or not and book either 24 or 76 hists
-	    int nModules = (tTopo_->getOTLayerNumber(det_id) > 100 ? 77 : 25);
-	    int nLadders = 0;
-	    if (tTopo_->getOTLayerNumber(det_id) == 4){
-		    nLadders = 49;
-	    }
-	    if (tTopo_->getOTLayerNumber(det_id) == 5){
-		    nLadders = 61;
-	    }
-	    if (tTopo_->getOTLayerNumber(det_id) == 6){
-		    nLadders = 77;
-	    }
+	    //int nModules = (tTopo_->getOTLayerNumber(det_id) > 100 ? 77 : 25);
+	    int nModules = 13;
+	    int nLadders = 2;
+	    //if (tTopo_->getOTLayerNumber(det_id) == 4){
+		    //nLadders = 49;
+	    //}
+	    //if (tTopo_->getOTLayerNumber(det_id) == 5){
+		    //nLadders = 61;
+	    //}
+	    //if (tTopo_->getOTLayerNumber(det_id) == 6){
+		    //nLadders = 77;
+	    //}
 
 	    for (int moduleNum = 1; moduleNum < nModules; moduleNum++) {
 		    HistoName.str("");
