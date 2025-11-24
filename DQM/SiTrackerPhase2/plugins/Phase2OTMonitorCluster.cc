@@ -126,7 +126,7 @@ void Phase2OTMonitorCluster::analyze(const edm::Event& iEvent, const edm::EventS
     if (!geomDetUnit)
       continue;
 
-    unsigned int module = tTopo_->module(rawid);
+    int module = tTopo_->module(rawid);
 
     std::string folderkey = phase2tkutil::getOTHistoId(detId, tTopo_);
 
@@ -187,13 +187,15 @@ void Phase2OTMonitorCluster::analyze(const edm::Event& iEvent, const edm::EventS
               }
 	      local_mes.PositionOfClusters_Module[module]->getTH2F()->SetStats(0);
 	      local_mes.PositionOfClusters_Module[module]->setOption("z");
-              local_mes.PositionOfClusters_Module[module]->Fill(clusterItr.center()+1, upDownLeftRight);
+	      for (int width = 1; width <= clusterItr.size(); width++){
+		      local_mes.PositionOfClusters_Module[module]->Fill(clusterItr.firstStrip()+width-1, upDownLeftRight);
+	      }
 
 	      if (tTopo_->getOTLayerNumber(rawid) < 100){
 		      unsigned int ladder = tTopo_->tobRod(rawid);
 		      local_mes.PositionOfClusters_Ladder[ladder]->setOption("z");
 		      local_mes.PositionOfClusters_Ladder[ladder]->getTH2F()->SetStats(0);
-		      local_mes.PositionOfClusters_Ladder[ladder]->Fill(module, upDownLeftRight);
+		      local_mes.PositionOfClusters_Ladder[ladder]->Fill((module < 13 ? module-13 : module-12), upDownLeftRight);
 	      }
 
 	}
@@ -295,11 +297,49 @@ void Phase2OTMonitorCluster::bookLayerHistos(DQMStore::IBooker& ibooker, uint32_
 	    std::string name;
 	    std::string title;
 	    
-	    //Barrel Layers 4-6 have mod num 1-24
-	    //TEDD1 R11 1-52 R12 1-60 R13 1-64 R14 1-72 R15 1-76
-	    //TEDD2 R8 ??-?? R9 ??-?? R10 ??-?? R11 ??-??
+	    //Barrel Layers 4-6 have 24 modules
+	    //TEDD1 R11 52 R12 60 R13 64 R14 72 R15 76
+	    //TEDD2 R8 52 R9 56 R10 64 R11 68 R12 76
 	    //for now just check if barrel or not and book either 24 or 76 hists
-	    int nModules = (tTopo_->getOTLayerNumber(det_id) > 100 ? 77 : 25);
+	    int nModules = 0;
+	    if (tTopo_->getOTLayerNumber(det_id)>100){
+		    if (tTopo_->tidWheel(det_id) < 3 && tTopo_->tidRing(det_id) > 10){
+                            //TEDD 1
+			    switch (tTopo_->tidRing(det_id)){
+				    case 11: nModules = 53;
+					     break;
+					case 12: nModules = 61;
+						 break;
+					case 13: nModules = 65;
+						 break;
+					case 14: nModules = 73;
+						 break;
+					case 15: nModules = 77;
+						 break;
+					default: nModules = 77;
+			    }
+                    }
+		    if (tTopo_->tidWheel(det_id) >= 3 && tTopo_->tidRing(det_id) > 7){
+			    //TEDD 2
+			    switch (tTopo_->tidRing(det_id)){
+                                    case 8: nModules = 53;
+                                             break;
+                                        case 9: nModules = 57;
+                                                 break;
+                                        case 10: nModules = 65;
+                                                 break;
+                                        case 11: nModules = 69;
+                                                 break;
+					case 12: nModules = 77;
+						 break;
+                                        default: nModules = 77;
+                            }
+
+		    }
+	    }
+	    else{
+		    nModules = 25;
+	    }
 	    int nLadders = 0;
 	    if (tTopo_->getOTLayerNumber(det_id) == 4){
 		    nLadders = 49;
@@ -315,7 +355,7 @@ void Phase2OTMonitorCluster::bookLayerHistos(DQMStore::IBooker& ibooker, uint32_
 		    HistoName.str("");
 		    HistoTitle.str("");
 		    name = "PositionOfClusters_Module" + std::to_string(moduleNum);
-		    title = name + ";strips;half-module;";
+		    title = name + ";strip;half-module;";
 		    HistoName << name;
 		    HistoTitle << title;
 		    local_mes.PositionOfClusters_Module[moduleNum]  = ibooker.book2D(HistoName.str(),
@@ -327,11 +367,12 @@ void Phase2OTMonitorCluster::bookLayerHistos(DQMStore::IBooker& ibooker, uint32_
 				    config_.getParameter<edm::ParameterSet>("PositionOfClusters_2S").getParameter<double>("ymin"),
 				    config_.getParameter<edm::ParameterSet>("PositionOfClusters_2S").getParameter<double>("ymax"));
 	    }
+
 	    for (int ladderNum = 1; ladderNum < nLadders; ladderNum++) {
 		    	HistoName.str("");
                     	HistoTitle.str("");
                     	name = "PositionOfClusters_Ladder" + std::to_string(ladderNum);
-                    	title = name + ";;half-module;";
+                    	title = name + ";module number [z];half-module;";
                     	HistoName << name;
                     	HistoTitle << title;
                     	local_mes.PositionOfClusters_Ladder[ladderNum]  = ibooker.book2D(HistoName.str(),
@@ -524,9 +565,9 @@ void Phase2OTMonitorCluster::fillDescriptions(edm::ConfigurationDescriptions& de
           edm::ParameterSetDescription psd0;
           psd0.add<std::string>("name", "PositionOfClusters_Ladder");
           psd0.add<std::string>("title", "PositionOfClusters_Ladder; ;half-sensor ;");
-          psd0.add<int>("NxBins", 24);
-          psd0.add<double>("xmin", 0.5);
-          psd0.add<double>("xmax", 24.5);
+          psd0.add<int>("NxBins", 25);
+          psd0.add<double>("xmin", -12.5);
+          psd0.add<double>("xmax", 12.5);
           psd0.add<int>("NyBins", 5);
           psd0.add<double>("ymin", -2.5);
           psd0.add<double>("ymax", 2.5);
