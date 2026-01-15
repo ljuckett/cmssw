@@ -1,5 +1,5 @@
 
-//SIMPLE SCRIPT for geometry plotting and debugging. 
+//SIMPLE SCRIPT for geometry plotting and debugging.
 void Geometry_plotter() {
 
  
@@ -37,7 +37,6 @@ void Geometry_plotter() {
 
       if (colorIndex > 50)
         colorIndex = 2;
-
     }
     /*if(matName == "materials:Air") {
        daughterVol->SetTransparency(100);
