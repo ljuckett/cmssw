@@ -23,7 +23,7 @@ process.load('SimGeneral.HepPDTESSource.pythiapdt_cfi')
 process.load('FWCore.MessageService.MessageLogger_cfi')
 process.load('Configuration.EventContent.EventContent_cff')
 process.load('SimGeneral.MixingModule.mixNoPU_cfi')
-process.load('Configuration.Geometry.GeometryExtendedRun4D98Reco_cff')
+process.load('Configuration.Geometry.GeometryExtendedRun4D500Reco_cff')
 process.load('Configuration.StandardSequences.MagneticField_cff')
 process.load('Configuration.StandardSequences.RawToDigi_Data_cff')
 process.load('Configuration.StandardSequences.L1Reco_cff')
@@ -35,13 +35,13 @@ process.load('DQMOffline.Configuration.DQMOffline_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(10),
+    input = cms.untracked.int32(-1),
     output = cms.optional.untracked.allowed(cms.int32,cms.PSet)
 )
 
 # Input source
 process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring('/store/relval/CMSSW_14_0_0_pre2/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_133X_mcRun4_realistic_v1_STD_2026D98_PU200_RV229-v1/2580000/0b2b0b0b-f312-48a8-9d46-ccbadc69bbfd.root'),
+        fileNames = cms.untracked.vstring('file:/eos/home-h/hrejebsf/CRACK/step2_5M.root'),
     secondaryFileNames = cms.untracked.vstring()
 )
 
@@ -128,7 +128,7 @@ process.validation_step=cms.Path(process.otvalid_seq)
 
 
 # Schedule definition
-process.schedule = cms.Schedule(process.rechits_step,
+process.schedule = cms.Schedule(#process.rechits_step,
                                 process.dqm_step,
                                 process.validation_step,
                                 process.DQMoutput_step
