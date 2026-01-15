@@ -73,7 +73,7 @@ public:
     MonitorElement* FractionOfOvTBitsVsEta{nullptr};
     MonitorElement* EtaOccupancyProfP{nullptr};
     MonitorElement* EtaOccupancyProfS{nullptr};
-    std::vector<MonitorElement*> NumberOfDigisPerChannel {77, nullptr};
+    std::vector<MonitorElement*> NumberOfDigisPerChannel{77, nullptr};
     unsigned int nDigiPerLayer{0};
     unsigned int nHitDetsPerLayer{0};
   };
@@ -84,11 +84,17 @@ public:
     int width;
     int column;
   };
+  std::vector<double> yVector {0, 0,0,0,0,0,0,0,0,0,0,0,0};
+  std::vector<double> xVector {0, 0,0,0,0,0,0,0,0,0,0,0,0};
+  std::vector<double> zVector {0, 0,0,0,0,0,0,0,0,0,0,0,0};
+
+
 
   MonitorElement* XYPositionMap{nullptr};
   MonitorElement* RZPositionMap{nullptr};
   MonitorElement* XYOccupancyMap{nullptr};
   MonitorElement* RZOccupancyMap{nullptr};
+  MonitorElement* CrackOverview{nullptr};
 
 private:
   void bookLayerHistos(DQMStore::IBooker& ibooker, unsigned int det_id);
@@ -134,6 +140,17 @@ Phase2TrackerMonitorDigi::Phase2TrackerMonitorDigi(const edm::ParameterSet& iCon
 Phase2TrackerMonitorDigi::~Phase2TrackerMonitorDigi() {
   // do anything here that needs to be done at desctruction time
   // (e.g. close files, deallocate resources etc.)
+
+	for (long unsigned int i = 0; i < xVector.size(); i++) {
+		std::cout << i << "x: " <<  xVector[i] << std::endl;
+	}
+	for (long unsigned int i = 0; i < yVector.size(); i++) {
+                std::cout << i << "y: " <<  yVector[i] << std::endl;
+        }
+	for (long unsigned int i = 0; i < zVector.size(); i++) {
+                std::cout << i << "z: " <<  zVector[i] << std::endl;
+        }
+
   LogDebug("Phase2TrackerMonitorDigi") << ">>> Destroy Phase2TrackerMonitorDigi ";
 }
 
@@ -328,20 +345,31 @@ void Phase2TrackerMonitorDigi::fillOTDigiHistos(const edm::Handle<edm::DetSetVec
       if (di->overThreshold())
         frac_ot++;
       LogDebug("Phase2TrackerMonitorDigi") << "  column " << col << " row " << row << std::dec << std::endl;
-      if (nColumns <= 2 && local_mes.NumberOfDigisPerChannel[module]){
-
-	      int upDownLeftRight = col+1; //Trying to get upper/lower left/right sensor
-	      if (tTopo_->isLower(rawid)){
-		      upDownLeftRight = upDownLeftRight * -1;
-	      }
-	      local_mes.NumberOfDigisPerChannel[module]->getTH2F()->SetStats(0);
-	      local_mes.NumberOfDigisPerChannel[module]->setOption("z");
-	      local_mes.NumberOfDigisPerChannel[module]->Fill((row+1), upDownLeftRight);
+      if (nColumns <= 2 && local_mes.NumberOfDigisPerChannel[module]) {
+        int upDownLeftRight = col + 1;  //Trying to get upper/lower left/right sensor
+        if (tTopo_->isLower(rawid)) {
+          upDownLeftRight = upDownLeftRight * -1;
+        }
+        local_mes.NumberOfDigisPerChannel[module]->getTH2F()->SetStats(0);
+        local_mes.NumberOfDigisPerChannel[module]->setOption("z");
+        local_mes.NumberOfDigisPerChannel[module]->Fill((row + 1), upDownLeftRight);
       }
       if (nColumns > 2 && local_mes.PositionOfDigisP)
         local_mes.PositionOfDigisP->Fill(row + 1, col + 1);
       if (nColumns <= 2 && local_mes.PositionOfDigisS)
         local_mes.PositionOfDigisS->Fill(row + 1, col + 1);
+      if (CrackOverview) {
+	MeasurementPoint mp(row + 0.5, col + 0.5);
+        GlobalPoint pdPos = geomDet->surface().toGlobal(gDetUnit->topology().localPosition(mp));
+
+        CrackOverview->Fill(module, layer - 0.05 + (module % 2 * 0.1));
+	if (layer == 5){
+		yVector[module] = pdPos.y();
+		xVector[module] = pdPos.x();
+		zVector[module] = pdPos.z();
+		//std::cout << "Module: " << module << " X: " << pdPos.x() << " Y: " << pdPos.y() << std::endl;
+      }
+      }
 
       if (clsFlag_) {
         if (row_last == -1 || abs(row - row_last) != 1 || col != col_last) {
@@ -485,6 +513,32 @@ void Phase2TrackerMonitorDigi::bookHistograms(DQMStore::IBooker& ibooker,
                                            ParametersOcc.getParameter<double>("xmax"));
   else
     RZOccupancyMap = nullptr;
+
+  Parameters = config_.getParameter<edm::ParameterSet>("CrackOverview");
+  if (Parameters.getParameter<bool>("switch")) {
+    CrackOverview = ibooker.book2DPoly("CrackOverview",
+                                       "CrackOverview;Module number;Layer",
+                                       Parameters.getParameter<double>("xmin"),
+                                       Parameters.getParameter<double>("xmax"),
+                                       Parameters.getParameter<double>("ymin"),
+                                       Parameters.getParameter<double>("ymax"));
+    if (CrackOverview->getTH2Poly()->GetNumberOfBins() == 0) {
+      double yOffset = 0;
+      for (int layer = 1; layer < 7; layer++) {
+        for (int module = 1; module < 13; module++) {
+          if (module % 2 == 0)
+            yOffset = -0.1;
+          else
+            yOffset = 0;
+          CrackOverview->addBin(module - 0.7, layer + yOffset, module + 0.7, layer + yOffset + 0.1);
+        }
+      }
+    }
+    CrackOverview->getTH2Poly()->SetStats(0);
+    CrackOverview->setOption("z");
+
+  } else
+    CrackOverview = nullptr;
 }
 //
 // -- Book Layer Histograms
@@ -620,7 +674,7 @@ void Phase2TrackerMonitorDigi::bookLayerHistos(DQMStore::IBooker& ibooker, unsig
       Parameters = config_.getParameter<edm::ParameterSet>("PositionOfDigisSH");
       HistoName.str("");
       HistoName << "PositionOfDigisS";
-      if (Parameters.getParameter<bool>("switch")) 
+      if (Parameters.getParameter<bool>("switch"))
         local_mes.PositionOfDigisS = ibooker.book2D(HistoName.str(),
                                                     HistoName.str(),
                                                     Parameters.getParameter<int32_t>("Nxbins"),
@@ -629,7 +683,6 @@ void Phase2TrackerMonitorDigi::bookLayerHistos(DQMStore::IBooker& ibooker, unsig
                                                     Parameters.getParameter<int32_t>("Nybins"),
                                                     Parameters.getParameter<double>("ymin"),
                                                     Parameters.getParameter<double>("ymax"));
-
 
       // For standalone clusteriser
       if (clsFlag_) {
@@ -741,7 +794,6 @@ void Phase2TrackerMonitorDigi::bookLayerHistos(DQMStore::IBooker& ibooker, unsig
         }
       }
     }
-
 
     // Plots for Standalone clusters (Can be switched on from configs)
     if (clsFlag_) {
