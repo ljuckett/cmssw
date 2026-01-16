@@ -103,5 +103,12 @@ otDigiMon = digiMon.clone(
         ymin   = 0.5,
         ymax   = 2.5,
         switch = True
+    ),
+        CrackOverview = digiMon.CrackOverview.clone(
+        xmin = 0,
+        xmax = 13.5,
+        ymin = 0,
+        ymax = 7.5,
+        switch = True
     )
 )

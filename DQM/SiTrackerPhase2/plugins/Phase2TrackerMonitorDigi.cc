@@ -89,6 +89,7 @@ public:
   MonitorElement* RZPositionMap{nullptr};
   MonitorElement* XYOccupancyMap{nullptr};
   MonitorElement* RZOccupancyMap{nullptr};
+  MonitorElement* CrackOverview{nullptr};
 
 private:
   void bookLayerHistos(DQMStore::IBooker& ibooker, unsigned int det_id);
@@ -284,6 +285,7 @@ void Phase2TrackerMonitorDigi::fillOTDigiHistos(const edm::Handle<edm::DetSetVec
     DetId detId(rawid);
     LogDebug("Phase2TrackerMonitorDigi") << " Det Id = " << rawid;
     int layer = tTopo_->getOTLayerNumber(rawid);
+    int module = tTopo_->module(rawid);
     if (layer < 0)
       continue;
     std::string key = getHistoId(rawid, pixelFlag_);
@@ -331,6 +333,8 @@ void Phase2TrackerMonitorDigi::fillOTDigiHistos(const edm::Handle<edm::DetSetVec
         local_mes.PositionOfDigisP->Fill(row + 1, col + 1);
       if (nColumns <= 2 && local_mes.PositionOfDigisS)
         local_mes.PositionOfDigisS->Fill(row + 1, col + 1);
+      if (nColumns <= 2 && CrackOverview)
+	      CrackOverview->Fill(module, layer - 0.05 + (module % 2 * 0.1));
 
       if (clsFlag_) {
         if (row_last == -1 || abs(row - row_last) != 1 || col != col_last) {
@@ -447,6 +451,31 @@ void Phase2TrackerMonitorDigi::bookHistograms(DQMStore::IBooker& ibooker,
                                            ParametersOcc.getParameter<double>("xmax"));
   else
     XYOccupancyMap = nullptr;
+
+  Parameters = config_.getParameter<edm::ParameterSet>("CrackOverview");
+  if (Parameters.getParameter<bool>("switch")) {
+    CrackOverview = ibooker.book2DPoly("CrackOverview",
+                                       "CrackOverview;Module number;Layer",
+                                       Parameters.getParameter<double>("xmin"),
+                                       Parameters.getParameter<double>("xmax"),
+                                       Parameters.getParameter<double>("ymin"),
+                                       Parameters.getParameter<double>("ymax"));
+    if (CrackOverview->getTH2Poly()->GetNumberOfBins() == 0) {
+      double yOffset = 0;
+      for (int layer = 1; layer < 7; layer++) {
+        for (int module = 1; module < 13; module++) {
+          if (module % 2 == 0)
+            yOffset = -0.1;
+          else
+            yOffset = 0;
+          CrackOverview->addBin(module - 0.7, layer + yOffset, module + 0.7, layer + yOffset + 0.1);
+        }
+      }
+    }
+    CrackOverview->getTH2Poly()->SetStats(0);
+    CrackOverview->setOption("z");
+  } else
+    CrackOverview = nullptr;
 
   Parameters = config_.getParameter<edm::ParameterSet>("RZPositionMapH");
   if (Parameters.getParameter<bool>("switch"))
