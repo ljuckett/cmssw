@@ -7,15 +7,15 @@ from Validation.SiTrackerPhase2V.Phase2OTValidateCluster_cff import *
 from Validation.SiTrackerPhase2V.Phase2OTValidateTrackingRecHit_cff import *
 from Validation.SiTrackerPhase2V.Phase2ValidateL1TTObjects_cff import *
 
-trackerphase2ValidationSource = cms.Sequence(pixDigiValid  
-                                             + otDigiValid 
-                                             + rechitValidIT
-                                             + trackingRechitValidIT
-                                             + clusterValidIT
+trackerphase2ValidationSource = cms.Sequence(#pixDigiValid  
+                                              otDigiValid 
+                                             #+ rechitValidIT
+                                             #+ trackingRechitValidIT
+                                             #+ clusterValidIT
                                              + clusterValidOT
-                                             + trackingRechitValidOT
-                                             + trackingParticleValidOT
-                                             + stubValidOT
+                                             #+ trackingRechitValidOT
+                                             #+ trackingParticleValidOT
+                                             #+ stubValidOT
 )
 
 from Configuration.ProcessModifiers.vectorHits_cff import vectorHits
