@@ -91,6 +91,11 @@ public:
   MonitorElement* RZPositionMap{nullptr};
   MonitorElement* XYOccupancyMap{nullptr};
   MonitorElement* RZOccupancyMap{nullptr};
+  MonitorElement* CrackOverview{nullptr};
+
+  std::vector<double> yVector {0, 0,0,0,0,0,0,0,0,0,0,0,0};
+  std::vector<double> xVector {0, 0,0,0,0,0,0,0,0,0,0,0,0};
+  std::vector<double> zVector {0, 0,0,0,0,0,0,0,0,0,0,0,0};
 
 private:
   void bookLayerHistos(DQMStore::IBooker& ibooker, unsigned int det_id);
@@ -136,6 +141,15 @@ Phase2TrackerMonitorDigi::Phase2TrackerMonitorDigi(const edm::ParameterSet& iCon
 Phase2TrackerMonitorDigi::~Phase2TrackerMonitorDigi() {
   // do anything here that needs to be done at desctruction time
   // (e.g. close files, deallocate resources etc.)
+  for (long unsigned int i = 0; i < xVector.size(); i++) {
+		std::cout << i << "x: " <<  xVector[i] << std::endl;
+  }
+  for (long unsigned int i = 0; i < yVector.size(); i++) {
+                std::cout << i << "y: " <<  yVector[i] << std::endl;
+  }
+  for (long unsigned int i = 0; i < zVector.size(); i++) {
+                std::cout << i << "z: " <<  zVector[i] << std::endl;
+  }
   LogDebug("Phase2TrackerMonitorDigi") << ">>> Destroy Phase2TrackerMonitorDigi ";
 }
 
@@ -286,6 +300,7 @@ void Phase2TrackerMonitorDigi::fillOTDigiHistos(const edm::Handle<edm::DetSetVec
     DetId detId(rawid);
     LogDebug("Phase2TrackerMonitorDigi") << " Det Id = " << rawid;
     int layer = tTopo_->getOTLayerNumber(rawid);
+    int module = tTopo_->module(rawid);
     if (layer < 0)
       continue;
     std::string key = getHistoId(rawid, pixelFlag_);
@@ -333,6 +348,17 @@ void Phase2TrackerMonitorDigi::fillOTDigiHistos(const edm::Handle<edm::DetSetVec
         local_mes.PositionOfDigisP->Fill(row + 1, col + 1);
       if (nColumns <= 2 && local_mes.PositionOfDigisS)
         local_mes.PositionOfDigisS->Fill(row + 1, col + 1);
+      if (CrackOverview){
+        CrackOverview->Fill(module, layer - 0.05 + (module % 2 * 0.1));
+
+      MeasurementPoint mp(row + 0.5, col + 0.5);
+      GlobalPoint pdPos = geomDet->surface().toGlobal(gDetUnit->topology().localPosition(mp));
+      if (layer == 1){
+		yVector[module] = pdPos.y();
+		xVector[module] = pdPos.x();
+		zVector[module] = pdPos.z();
+      }
+      }
 
       if (clsFlag_) {
         if (row_last == -1 || abs(row - row_last) != 1 || col != col_last) {
@@ -476,6 +502,32 @@ void Phase2TrackerMonitorDigi::bookHistograms(DQMStore::IBooker& ibooker,
                                            ParametersOcc.getParameter<double>("xmax"));
   else
     RZOccupancyMap = nullptr;
+
+  Parameters = config_.getParameter<edm::ParameterSet>("CrackOverview");
+  if (Parameters.getParameter<bool>("switch")) {
+    CrackOverview = ibooker.book2DPoly("CrackOverview",
+                                       "CrackOverview;Module number;Layer",
+                                       Parameters.getParameter<double>("xmin"),
+                                       Parameters.getParameter<double>("xmax"),
+                                       Parameters.getParameter<double>("ymin"),
+                                       Parameters.getParameter<double>("ymax"));
+    if (CrackOverview->getTH2Poly()->GetNumberOfBins() == 0) {
+      double yOffset = 0;
+      for (int layer = 1; layer < 7; layer++) {
+        for (int module = 1; module < 13; module++) {
+          if (module % 2 == 0)
+            yOffset = -0.1;
+          else
+            yOffset = 0;
+          CrackOverview->addBin(module - 0.7, layer + yOffset, module + 0.7, layer + yOffset + 0.1);
+        }
+      }
+    }
+    CrackOverview->getTH2Poly()->SetStats(false);
+    CrackOverview->setOption("z");
+
+  } else
+    CrackOverview = nullptr;
 }
 //
 // -- Book Layer Histograms
