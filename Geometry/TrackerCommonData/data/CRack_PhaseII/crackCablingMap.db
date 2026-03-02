@@ -1,0 +1,76 @@
+SQLite format 3␐␁␁@  ␃␒␈␄␁␃.�@
+␏�␏␆␁␎P␏�
+�␌�
+�␋R␌�	�␋#␈\	�␇&␈'␆␁␆��e␎␇␗))␁�␅tableGLOBAL_TAG_MAPGLOBAL_TAG_MAP␏CREATE TABLE "GLOBAL_TAG_MAP" ( "GLOBAL_TAG_NAME" TEXT  NOT NULL,"RECORD" TEXT  NOT NULL,"LABEL" TEXT  NOT NULL,"TAG_NAME" TEXT  NOT NULL, PRIMARY KEY("GLOBAL_TAG_NAME","RECORD","LABEL") );␏␆␗O)␁indexsqlite_autoindex_GLOBAL_TAG_MAP_1GLOBAL_TAG_MAP␐�~␌␇␗!!␁�GtableGLOBAL_TAGGLOBAL_TAG
+CREATE TABLE "GLOBAL_TAG" ( "NAME" TEXT ,"VALIDITY" ULONGLONG  NOT NULL,"DESCRIPTION" TEXT  NOT NULL,"RELEASE" TEXT  NOT NULL,"SNAPSHOT_TIME" TIMESTAMP  NOT NULL,"INSERTION_TIME" TIMESTAMP  NOT NULL, PRIMARY KEY("NAME") )3
+␆␗G!␁indexsqlite_autoindex_GLOBAL_TAG_1GLOBAL_TAG␎�-
+␇␗//␁�	tableTAG_AUTHORIZATIONTAG_AUTHORIZATION␋CREATE TABLE "TAG_AUTHORIZATION" ( "TAG_NAME" TEXT  NOT NULL,"ACCESS_TYPE" INT  NOT NULL,"CREDENTIAL" TEXT  NOT NULL,"CREDENTIAL_TYPE" INT  NOT NULL, PRIMARY KEY("TAG_NAME","CREDENTIAL","CREDENTIAL_TYPE"), FOREIGN KEY("TAG_NAME") REFERENCES TAG("NAME") )A␋␆␗U/␁indexsqlite_autoindex_TAG_AUTHORIZATION_1TAG_AUTHORIZATION␌�Q␈␇␗␛␛␁�ytableTAG_LOGTAG_LOG	CREATE TABLE "TAG_LOG" ( "TAG_NAME" TEXT  NOT NULL,"EVENT_TIME" TIMESTAMP  NOT NULL,"USER_NAME" TEXT  NOT NULL,"HOST_NAME" TEXT  NOT NULL,"COMMAND" TEXT  NOT NULL,"ACTION" TEXT  NOT NULL,"USER_TEXT" TEXT  NOT NULL, PRIMARY KEY("TAG_NAME","EVENT_TIME","ACTION"), FOREIGN KEY("TAG_NAME") REFERENCES TAG("NAME") )-	␆␗A␛␁indexsqlite_autoindex_TAG_LOG_1TAG_LOG
+�<␆␇␗␓␓␁�_tableIOVIOV␇CREATE TABLE "IOV" ( "TAG_NAME" TEXT  NOT NULL,"SINCE" ULONGLONG  NOT NULL,"PAYLOAD_HASH" TEXT  NOT NULL,"INSERTION_TIME" TIMESTAMP  NOT NULL, PRIMARY KEY("TAG_NAME","SINCE","INSERTION_TIME"), FOREIGN KEY("TAG_NAME") REFERENCES TAG("NAME"), FOREIGN KEY("PAYLOAD_HASH") REFERENCES PAYLOAD("HASH") )%␇␆␗9␓␁indexsqlite_autoindex_IOV_1IOV␈�g␄␇␗␛␛␁�%tablePAYLOADPAYLOAD␅CREATE TABLE "PAYLOAD" ( "HASH" TEXT ,"OBJECT_TYPE" TEXT  NOT NULL,"DATA" BLOB  NOT NULL,"STREAMER_INFO" BLOB  NOT NULL,"VERSION" TEXT  NOT NULL,"INSERTION_TIME" TIMESTAMP  NOT NULL, PRIMARY KEY("HASH") )-␅␆␗A␛␁indexsqlite_autoindex_PAYLOAD_1PAYLOAD␆}␃␇␗++␁�1tablecoral_sqlite_fkcoral_sqlite_fk␄CREATE TABLE coral_sqlite_fk(id TEXT NOT NULL, name TEXT, tablename TEXT NOT NULL)�~␁␇␗␓␓␁�ctableTAGTAG␂CREATE TABLE "TAG" ( "NAME" TEXT ,"TIME_TYPE" TEXT  NOT NULL,"OBJECT_TYPE" TEXT  NOT NULL,"SYNCHRONIZATION" TEXT  NOT NULL,"END_OF_VALIDITY" ULONGLONG  NOT NULL,"DESCRIPTION" TEXT  NOT NULL,"LAST_VALIDATED_TIME" ULONGLONG  NOT NULL,"INSERTION_TIME" TIMESTAMP  NOT NULL,"MODIFICATION_TIME" TIMESTAMP  NOT NULL,"PROTECTION_CODE" INT  NOT NULL, PRIMARY KEY("NAME") )%␂␆␗9␓␁indexsqlite_autoindex_TAG_1TAG␃␈
+␁␏v␏v�␇␁␋E␓I␓␁␛␈AA␈DTCCablingMapProducerUserRunRunTrackerDetToDTCELinkCablingMapany�New Tag2026-01-12 14:16:12.2627192026-01-12 14:16:12.262719
+␁␏�␏�␟␃E	DTCCablingMapProducerUserRun
+␐␅␁␏�␒␏��2␂	]I�~�"␗A5a135293303ab1fe3ae2266bf84c267a4663fe9bTrackerDetToDTCELinkCablingMap␡␁␓␁H␁␡␄0␄l␚␁H␁␁␄,␄l␚␁G␁␁␄(␄l␚␁F␁␁␄$␄l␚␁E␁␁␄ ␄l␚␁D␁␁␄␜␄l␚␁C␁␁␄␘␄l␚␁B␁␁␄␔␄l␚␁A␁␁␄␐␄l␚␁@␁␁␄␌␄l␚␁?␁␁␄␈␄l␚␁>␁␁␄␄␄l␚␁=␁␁␄0␄\␚␁<␁␁␄␌␄<␚␁␛␁␁␄(␄,␚␁␖␁␁␄␈␄<␚␁␚␁␁␄$␄,␚␁␕␁␁␄␄␄<␚␁␙␁␁␄ ␄,␚␁␔␁␁␄0␄,␚␁␘␁␁␄␔␄<␚␁␝␁␁␄,␄,␚␁␗␁␁␄␐␄<␚␁␜␁␁␄␜␄,␚␁␓␁␁␄␘␄,␚␁␒␁␁␄␔␄,␚␁␑␁␁␄0␄␜␚␁␌␁␁␄␐␄,␚␁␐␁␁␄,␄␜␚␁␋␁␁␄␌␄,␚␁␏␁␁␄(␄␜␚␁
+␁␁␄␈␄,␚␁␎␁␁␄$␄␜␚␁	␁␁␄␄␄␜␚␁␁␁␁␄␈␄␜␚␁␂␁␁␄␌␄␜␚␁␃␁␁␄␐␄␜␚␁␄␁␁␄␔␄␜␚␁␅␁␁␄␘␄␜␚␁␆␁␁␄␜␄␜␚␁␇␁␁␄ ␄␜␚␁␈␁␁␄␄␄,␚␁
+␁␁␄␘␄<␚␁␞␁␁␄␜␄<␚␁␟␁␁␄ ␄<␚␁ ␁␁␄␄␄L␚␁%␁␁␄$␄<␚␁!␁␁␄␈␄L␚␁&␁␁␄(␄<␚␁"␁␁␄␌␄L␚␁'␁␁␄,␄<␚␁#␁␁␄␐␄L␚␁(␁␁␄0␄<␚␁$␁␁␄␔␄L␚␁)␁␁␄␘␄L␚␁*␁␁␄␜␄L␚␁+␁␁␄ ␄L␚␁,␁␁␄␄␄\␚␁1␁␁␄$␄L␚␁-␁␁␄␈␄\␚␁2␁␁␄(␄L␚␁.␁␁␄␌␄\␚␁3␁␁␄,␄L␚␁/␁␁␄␐␄\␚␁4␁␁␄0␄L␚␁0␁␁␄␔␄\␚␁5␁␁␄␘␄\␚␁6␁␁␄␜␄\␚␁7␁␁␄ ␄\␚␁8␁␁␄$␄\␚␁9␁␁␄(␄\␚␁:␁␁␄,␄\␚␁;␁␁␁H␁␡␁H␁␁␄0␄l␚␁G␁␁␄,␄l␚␁F␁␁␄(␄l␚␁E␁␁␄$␄l␚␁D␁␁␄ ␄l␚␁C␁␁␄␜␄l␚␁B␁␁␄␘␄l␚␁A␁␁␄␔␄l␚␁@␁␁␄␐␄l␚␁?␁␁␄␌␄l␚␁>␁␁␄␈␄l␚␁=␁␁␄␄␄l␚␁<␁␁␄0␄\␚␁␝␁␁␄␔␄<␚␁␜␁␁␄␐␄<␚␁␛␁␁␄␌␄<␚␁␚␁␁␄␈␄<␚␁␙␁␁␄␄␄<␚␁␘␁␁␄0␄,␚␁␗␁␁␄,␄,␚␁␖␁␁␄(␄,␚␁␕␁␁␄$␄,␚␁␔␁␁␄ ␄,␚␁␓␁␁␄␜␄,␚␁␒␁␁␄␘␄,␚␁␑␁␁␄␔␄,␚␁␐␁␁␄␐␄,␚␁␏␁␁␄␌␄,␚␁␎␁␁␄␈␄,␚␁␁␁␁␄␄␄␜␚␁␂␁␁␄␈␄␜␚␁␃␁␁␄␌␄␜␚␁␄␁␁␄␐␄␜␚␁␅␁␁␄␔␄␜␚␁␆␁␁␄␘␄␜␚␁␇␁␁␄␜␄␜␚␁␈␁␁␄ ␄␜␚␁	␁␁␄$␄␜␚␁
+␁␁␄(␄␜␚␁␋␁␁␄,␄␜␚␁␌␁␁␄0␄␜␚␁
+␁␁␄␄␄,␚␁␞␁␁␄␘␄<␚␁␟␁␁␄␜␄<␚␁ ␁␁␄ ␄<␚␁!␁␁␄$␄<␚␁"␁␁␄(␄<␚␁#␁␁␄,␄<␚␁$␁␁␄0␄<␚␁%␁␁␄␄␄L␚␁&␁␁␄␈␄L␚␁'␁␁␄␌␄L␚␁(␁␁␄␐␄L␚␁)␁␁␄␔␄L␚␁*␁␁␄␘␄L␚␁+␁␁␄␜␄L␚␁,␁␁␄ ␄L␚␁-␁␁␄$␄L␚␁.␁␁␄(␄L␚␁/␁␁␄,␄L␚␁0␁␁␄0␄L␚␁1␁␁␄␄␄\␚␁2␁␁␄␈␄\␚␁3␁␁␄␌␄\␚␁4␁␁␄␐␄\␚␁5␁␁␄␔␄\␚␁6␁␁␄␘␄\␚␁7␁␁␄␜␄\␚␁8␁␁␄ ␄\␚␁9␁␁␄$␄\␚␁:␁␁␄(␄\␚␁;␁␁␄,␄\␚ {
+"CMSSW_version": "CMSSW_16_0_0_pre4",
+"architecture": "el9_amd64_gcc13",
+"technology": "boost/serialization",
+"tech_version": "1_80"
+ }
+dummy2026-01-12 15:11:20.451356�B␁	]I�␞�"␗A21e53d17c6a15e7e345da57b6ce4b3efc2e66bf5TrackerDetToDTCELinkCablingMap␡␁␓␁H␁␡␄0␄l␚␁H␂�␁␄,␄l␚␁G␂�␁␄(␄l␚␁F␂�␁␄$␄l␚␁E␂�␁␄ ␄l␚␁D␂�␁␄␜␄l␚␁C␂�␁␄␘␄l␚␁B␂�␁␄␔␄l␚␁A␂�␁␄␐␄l␚␁@␂�␁␄␌␄l␚␁?␂�␁␄␈␄l␚␁>␂�␁␄␄␄l␚␁=␂�␁␄0␄\␚␁<␂�␁␄␌␄<␚␁␛␂�␁␄(␄,␚␁␖␂�␁␄␈␄<␚␁␚␂�␁␄$␄,␚␁␕␂�␁␄␄␄<␚␁␙␂�␁␄ ␄,␚␁␔␂�␁␄0␄,␚␁␘␂�␁␄␔␄<␚␁␝␂�␁␄,␄,␚␁␗␂�␁␄␐␄<␚␁␜␂�␁␄␜␄,␚␁␓␂�␁␄␘␄,␚␁␒␂�␁␄␔␄,␚␁␑␂�␁␄0␄␜␚␁␌␂�␁␄␐␄,␚␁␐␂�␁␄,␄␜␚␁␋␂�␁␄␌␄,␚␁␏␂�␁␄(␄␜␚␁
+␂�␁␄␈␄,␚␁␎␂�␁␄$␄␜␚␁	␂�␁␄␄␄␜␚␁␁␂�␁␄␈␄␜␚␁␂␂�␁␄␌␄␜␚␁␃␂�␁␄␐␄␜␚␁␄␂�␁␄␔␄␜␚␁␅␂�␁␄␘␄␜␚␁␆␂�␁␄␜␄␜␚␁␇␂�␁␄ ␄␜␚␁␈␂�␁␄␄␄,␚␁
+␂�␁␄␘␄<␚␁␞␂�␁␄␜␄<␚␁␟␂�␁␄ ␄<␚␁ ␂�␁␄␄␄L␚␁%␂�␁␄$␄<␚␁!␂�␁␄␈␄L␚␁&␂�␁␄(␄<␚␁"␂�␁␄␌␄L␚␁'␂�␁␄,␄<␚␁#␂�␁␄␐␄L␚␁(␂�␁␄0␄<␚␁$␂�␁␄␔␄L␚␁)␂�␁␄␘␄L␚␁*␂�␁␄␜␄L␚␁+␂�␁␄ ␄L␚␁,␂�␁␄␄␄\␚␁1␂�␁␄$␄L␚␁-␂�␁␄␈␄\␚␁2␂�␁␄(␄L␚␁.␂�␁␄␌␄\␚␁3␂�␁␄,␄L␚␁/␂�␁␄␐␄\␚␁4␂�␁␄0␄L␚␁0␂�␁␄␔␄\␚␁5␂�␁␄␘␄\␚␁6␂�␁␄␜␄\␚␁7␂�␁␄ ␄\␚␁8␂�␁␄$␄\␚␁9␂�␁␄(␄\␚␁:␂�␁␄,␄\␚␁;␂�␁␁H␁␡␁H␂�␁␄0␄l␚␁G␂�␁␄,␄l␚␁F␂�␁␄(␄l␚␁E␂�␁␄$␄l␚␁D␂�␁␄ ␄l␚␁C␂�␁␄␜␄l␚␁B␂�␁␄␘␄l␚␁A␂�␁␄␔␄l␚␁@␂�␁␄␐␄l␚␁?␂�␁␄␌␄l␚␁>␂�␁␄␈␄l␚␁=␂�␁␄␄␄l␚␁<␂�␁␄0␄\␚␁␝␂�␁␄␔␄<␚␁␜␂�␁␄␐␄<␚␁␛␂�␁␄␌␄<␚␁␚␂�␁␄␈␄<␚␁␙␂�␁␄␄␄<␚␁␘␂�␁␄0␄,␚␁␗␂�␁␄,␄,␚␁␖␂�␁␄(␄,␚␁␕␂�␁␄$␄,␚␁␔␂�␁␄ ␄,␚␁␓␂�␁␄␜␄,␚␁␒␂�␁␄␘␄,␚␁␑␂�␁␄␔␄,␚␁␐␂�␁␄␐␄,␚␁␏␂�␁␄␌␄,␚␁␎␂�␁␄␈␄,␚␁␁␂�␁␄␄␄␜␚␁␂␂�␁␄␈␄␜␚␁␃␂�␁␄␌␄␜␚␁␄␂�␁␄␐␄␜␚␁␅␂�␁␄␔␄␜␚␁␆␂�␁␄␘␄␜␚␁␇␂�␁␄␜␄␜␚␁␈␂�␁␄ ␄␜␚␁	␂�␁␄$␄␜␚␁
+␂�␁␄(␄␜␚␁␋␂�␁␄,␄␜␚␁␌␂�␁␄0␄␜␚␁
+␂�␁␄␄␄,␚␁␞␂�␁␄␘␄<␚␁␟␂�␁␄␜␄<␚␁ ␂�␁␄ ␄<␚␁!␂�␁␄$␄<␚␁"␂�␁␄(␄<␚␁#␂�␁␄,␄<␚␁$␂�␁␄0␄<␚␁%␂�␁␄␄␄L␚␁&␂�␁␄␈␄L␚␁'␂�␁␄␌␄L␚␁(␂�␁␄␐␄L␚␁)␂�␁␄␔␄L␚␁*␂�␁␄␘␄L␚␁+␂�␁␄␜␄L␚␁,␂�␁␄ ␄L␚␁-␂�␁␄$␄L␚␁.␂�␁␄(␄L␚␁/␂�␁␄,␄L␚␁0␂�␁␄0␄L␚␁1␂�␁␄␄␄\␚␁2␂�␁␄␈␄\␚␁3␂�␁␄␌␄\␚␁4␂�␁␄␐␄\␚␁5␂�␁␄␔␄\␚␁6␂�␁␄␘␄\␚␁7␂�␁␄␜␄\␚␁8␂�␁␄ ␄\␚␁9␂�␁␄$␄\␚␁:␂�␁␄(␄\␚␁;␂�␁␄,␄\␚ {
+"CMSSW_version": "CMSSW_16_0_0_pre4",
+"architecture": "el9_amd64_gcc13",
+"technology": "boost/serialization",
+"tech_version": "1_80"
+ }
+dummy2026-01-12 14:16:12.2␑␂
+␃␏z␏z␏�␏�,␃]␁0384569ebfd8a2edbca1cf142200a8cf4efd9580␃,␃]␁5a135293303ab1fe3ae2266bf84c267a4663fe9b␂+␃]	21e53d17c6a15e7e345da57b6ce4b3efc2e66bf5
+␃␎�␏�␏6␎�c␃␅E	]ADTCCablingMapProducerUserRun0384569ebfd8a2edbca1cf142200a8cf4efd95802026-01-12 15:28:56.572021c␂␅E	]ADTCCablingMapProducerUserRun5a135293303ab1fe3ae2266bf84c267a4663fe9b2026-01-12 15:11:20.454471c␁␅E	]ADTCCablingMapProducerUserRun21e53d17c6a15e7e345da57b6ce4b3efc2e66bf52026-01-12 14:16:12.262727
+␃␏J␏�␏�␏J<␅E	A␁DTCCablingMapProducerUserRun2026-01-12 15:28:56.572021␃<␅E	A␁DTCCablingMapProducerUserRun2026-01-12 15:11:20.454471␂;␅E	A	DTCCablingMapProducerUserRun2026-01-12 14:16:12.262727
+␄
+�␏o␎�␎G
+��␑␄␈EA␝/Y3␏DTCCablingMapProducerUserRun2026-01-12 15:28:56.572027hrejebsflxplus993.cern.chcmsRun DTCCablingMapProducer_write.py 1 iov(s) inserted; -�␑␃␈EA␝/Y3␏DTCCablingMapProducerUserRun2026-01-12 15:11:20.454476hrejebsflxplus993.cern.chcmsRun DTCCablingMapProducer_write.py 1 iov(s) inserted; -�␑␂␈EA␝/Y3␏DTCCablingMapProducerUserRun2026-01-12 14:16:12.262733hrejebsflxplus993.cern.chcmsRun DTCCablingMapProducer_write.py 1 iov(s) inserted; -�␎␁␈EA␝/Y-␏DTCCablingMapProducerUserRun2026-01-12 14:16:12.262719hrejebsflxplus993.cern.chcmsRun DTCCablingMapProducer_write.py New tag created.-
+␄␎�␏�␏d␏␔␎�O␅EA3␁DTCCablingMapProducerUserRun2026-01-12 15:28:56.5720271 iov(s) inserted; ␄O␅EA3␁DTCCablingMapProducerUserRun2026-01-12 15:11:20.4544761 iov(s) inserted; ␃O␅EA3␁DTCCablingMapProducerUserRun2026-01-12 14:16:12.2627331 iov(s) inserted; ␂K␅EA-	DTCCablingMapProducerUserRun2026-01-12 14:16:12.262719New tag created.
+␐
+␐
+␐
+␐
+␐
+␐
+␂␂␆␈�␂␆�2␂	]I�~�"␗A5a135293303ab1fe3ae2266bf84c267a4663fe9bTrackerDetToDTCELinkCablingMap␡␁␓␁H␁␡␄0␄l␚␁H␁␁␄,␄l␚␁G␁␁␄(␄l␚␁F␁␁␄$␄l␚␁E␁␁␄ ␄l␚␁D␁␁␄␜␄l␚␁C␁␁␄␘␄l␚␁B␁␁␄␔␄l␚␁A␁␁␄␐␄l␚␁@␁␁␄␌␄l␚␁?␁␁␄␈␄l␚␁>␁␁␄␄␄l␚␁=␁␁␄0␄\␚␁<␁␁␄␌␄<␚␁␛␁␁␄(␄,␚␁␖␁␁␄␈␄<␚␁␚␁␁␄$␄,␚␁␕␁␁␄␄␄<␚␁␙␁␁␄ ␄,␚␁␔␁␁␄0␄,␚␁␘␁␁␄␔␄<␚␁␝␁␁␄,␄,␚␁␗␁␁␄␐␄<␚␁␜␁␁␄␜␄,␚␁␓␁␁␄␘␄,␚␁␒␁␁␄␔␄,␚␁␑␁␁␄0␄␜␚␁␌␁␁␄␐␄,␚␁␐␁␁␄,␄␜␚␁␋␁␁␄␌␄,␚␁␏␁␁␄(␄␜␚␁
+␁␁␄␈␄,␚␁␎␁␁␄$␄␜␚␁	␁␁␄␄␄␜␚␁␁␁␁␄␈␄␜␚␁␂␁␁␄␌␄␜␚␁␃␁␁␄␐␄␜␚␁␄␁␁␄␔␄␜␚␁␅␁␁␄␘␄␜␚␁␆␁␁␄␜␄␜␚␁␇␁␁␄ ␄␜␚␁␈␁␁␄␄␄,␚␁
+␁␁␄␘␄<␚␁␞␁␁␄␜␄<␚␁␟␁␁␄ ␄<␚␁ ␁␁␄␄␄L␚␁%␁␁␄$␄<␚␁!␁␁␄␈␄L␚␁&␁␁␄(␄<␚␁"␁␁␄␌␄L␚␁'␁␁␄,␄<␚␁#␁␁␄␐␄L␚␁(␁␁␄0␄<␚␁$␁␁␄␔␄L␚␁)␁␁␄␘␄L␚␁*␁␁␄␜␄L␚␁+␁␁␄ ␄L␚␁,␁␁␄␄␄\␚␁1␁␁␄$␄L␚␁-␁␁␄␈␄\␚␁2␁␁␄(␄L␚␁.␁␁␄␌␄\␚␁3␁␁␄,␄L␚␁/␁␁␄␐␄\␚␁4␁␁␄0␄L␚␁0␁␁␄␔␄\␚␁5␁␁␄␘␄\␚␁6␁␁␄␜␄\␚␁7␁␁␄ ␄\␚␁8␁␁␄$␄\␚␁9␁␁␄(␄\␚␁:␁␁␄,␄\␚␁;␁␁␁H␁␡␁H␁␁␄0␄l␚␁G␁␁␄,␄l␚␁F␁␁␄(␄l␚␁E␁␁␄$␄l␚␁D␁␁␄ ␄l␚␁C␁␁␄␜␄l␚␁B␁␁␄␘␄l␚␁A␁␁␄␔␄l␚␁@␁␁␄␐␄l␚␁?␁␁␄␌␄l␚␁>␁␁␄␈␄l␚␁=␁␁␄␄␄l␚␁<␁␁␄0␄\␚␁␝␁␁␄␔␄<␚␁␜␁␁␄␐␄<␚␁␛␁␁␄␌␄<␚␁␚␁␁␄␈␄<␚␁␙␁␁␄␄␄<␚␁␘␁␁␄0␄,␚␁␗␁␁␄,␄,␚␁␖␁␁␄(␄,␚␁␕␁␁␄$␄,␚␁␔␁␁␄ ␄,␚␁␓␁␁␄␜␄,␚␁␒␁␁␄␘␄,␚␁␑␁␁␄␔␄,␚␁␐␁␁␄␐␄,␚␁␏␁␁␄␌␄,␚␁␎␁␁␄␈␄,␚␁␁␁␁␄␄␄␜␚␁␂␁␁␄␈␄␜␚␁␃␁␁␄␌␄␜␚␁␄␁␁␄␐␄␜␚␁␅␁␁␄␔␄␜␚␁␆␁␁␄␘␄␜␚␁␇␁␁␄␜␄␜␚␁␈␁␁␄ ␄␜␚␁	␁␁␄$␄␜␚␁
+␁␁␄(␄␜␚␁␋␁␁␄,␄␜␚␁␌␁␁␄0␄␜␚␁
+␁␁␄␄␄,␚␁␞␁␁␄␘␄<␚␁␟␁␁␄␜␄<␚␁ ␁␁␄ ␄<␚␁!␁␁␄$␄<␚␁"␁␁␄(␄<␚␁#␁␁␄,␄<␚␁$␁␁␄0␄<␚␁%␁␁␄␄␄L␚␁&␁␁␄␈␄L␚␁'␁␁␄␌␄L␚␁(␁␁␄␐␄L␚␁)␁␁␄␔␄L␚␁*␁␁␄␘␄L␚␁+␁␁␄␜␄L␚␁,␁␁␄ ␄L␚␁-␁␁␄$␄L␚␁.␁␁␄(␄L␚␁/␁␁␄,␄L␚␁0␁␁␄0␄L␚␁1␁␁␄␄␄\␚␁2␁␁␄␈␄\␚␁3␁␁␄␌␄\␚␁4␁␁␄␐␄\␚␁5␁␁␄␔␄\␚␁6␁␁␄␘␄\␚␁7␁␁␄␜␄\␚␁8␁␁␄ ␄\␚␁9␁␁␄$␄\␚␁:␁␁␄(␄\␚␁;␁␁␄,␄\␚ {
+"CMSSW_version": "CMSSW_16_0_0_pre4",
+"architecture": "el9_amd64_gcc13",
+"technology": "boost/serialization",
+"tech_version": "1_80"
+ }
+dummy2026-01-12 15:11:20.451356�B␁	]I�␞�"␗A21e53d17c6a15e7e345da57b6ce4b3efc2e66bf5TrackerDetToDTCELinkCablingMap␡␁␓␁H␁␡␄0␄l␚␁H␂�␁␄,␄l␚␁G␂�␁␄(␄l␚␁F␂�␁␄$␄l␚␁E␂�␁␄ ␄l␚␁D␂�␁␄␜␄l␚␁C␂�␁␄␘␄l␚␁B␂�␁␄␔␄l␚␁A␂�␁␄␐␄l␚␁@␂�␁␄␌␄l␚␁?␂�␁␄␈␄l␚␁>␂�␁␄␄␄l␚␁=␂�␁␄0␄\␚␁<␂�␁␄␌␄<␚␁␛␂�␁␄(␄,␚␁␖␂�␁␄␈␄<␚␁␚␂�␁␄$␄,␚␁␕␂�␁␄␄␄<␚␁␙␂�␁␄ ␄,␚␁␔␂�␁␄0␄,␚␁␘␂�␁␄␔␄<␚␁␝␂�␁␄,␄,␚␁␗␂�␁␄␐␄<␚␁␜␂�␁␄␜␄,␚␁␓␂�␁␄␘␄,␚␁␒␂�␁␄␔␄,␚␁␑␂�␁␄0␄␜␚␁␌␂�␁␄␐␄,␚␁␐␂�␁␄,␄␜␚␁␋␂�␁␄␌␄,␚␁␏␂�␁␄(␄␜␚␁
+␂�␁␄␈␄,␚␁␎␂�␁␄$␄␜␚␁	␂�␁␄␄␄␜␚␁␁␂�␁␄␈␄␜␚␁␂␂�␁␄␌␄␜␚␁␃␂�␁␄␐␄␜␚␁␄␂�␁␄␔␄␜␚␁␅␂�␁␄␘␄␜␚␁␆␂�␁␄␜␄␜␚␁␇␂�␁␄ ␄␜␚␁␈␂�␁␄␄␄,␚␁
+␂�␁␄␘␄<␚␁␞␂�␁␄␜␄<␚␁␟␂�␁␄ ␄<␚␁ ␂�␁␄␄␄L␚␁%␂�␁␄$␄<␚␁!␂�␁␄␈␄L␚␁&␂�␁␄(␄<␚␁"␂�␁␄␌␄L␚␁'␂�␁␄,␄<␚␁#␂�␁␄␐␄L␚␁(␂�␁␄0␄<␚␁$␂�␁␄␔␄L␚␁)␂�␁␄␘␄L␚␁*␂�␁␄␜␄L␚␁+␂�␁␄ ␄L␚␁,␂�␁␄␄␄\␚␁1␂�␁␄$␄L␚␁-␂�␁␄␈␄\␚␁2␂�␁␄(␄L␚␁.␂�␁␄␌␄\␚␁3␂�␁␄,␄L␚␁/␂�␁␄␐␄\␚␁4␂�␁␄0␄L␚␁0␂�␁␄␔␄\␚␁5␂�␁␄␘␄\␚␁6␂�␁␄␜␄\␚␁7␂�␁␄ ␄\␚␁8␂�␁␄$␄\␚␁9␂�␁␄(␄\␚␁:␂�␁␄,␄\␚␁;␂�␁␁H␁␡␁H␂�␁␄0␄l␚␁G␂�␁␄,␄l␚␁F␂�␁␄(␄l␚␁E␂�␁␄$␄l␚␁D␂�␁␄ ␄l␚␁C␂�␁␄␜␄l␚␁B␂�␁␄␘␄l␚␁A␂�␁␄␔␄l␚␁@␂�␁␄␐␄l␚␁?␂�␁␄␌␄l␚␁>␂�␁␄␈␄l␚␁=␂�␁␄␄␄l␚␁<␂�␁␄0␄\␚␁␝␂�␁␄␔␄<␚␁␜␂�␁␄␐␄<␚␁␛␂�␁␄␌␄<␚␁␚␂�␁␄␈␄<␚␁␙␂�␁␄␄␄<␚␁␘␂�␁␄0␄,␚␁␗␂�␁␄,␄,␚␁␖␂�␁␄(␄,␚␁␕␂�␁␄$␄,␚␁␔␂�␁␄ ␄,␚␁␓␂�␁␄␜␄,␚␁␒␂�␁␄␘␄,␚␁␑␂�␁␄␔␄,␚␁␐␂�␁␄␐␄,␚␁␏␂�␁␄␌␄,␚␁␎␂�␁␄␈␄,␚␁␁␂�␁␄␄␄␜␚␁␂␂�␁␄␈␄␜␚␁␃␂�␁␄␌␄␜␚␁␄␂�␁␄␐␄␜␚␁␅␂�␁␄␔␄␜␚␁␆␂�␁␄␘␄␜␚␁␇␂�␁␄␜␄␜␚␁␈␂�␁␄ ␄␜␚␁	␂�␁␄$␄␜␚␁
+␂�␁␄(␄␜␚␁␋␂�␁␄,␄␜␚␁␌␂�␁␄0␄␜␚␁
+␂�␁␄␄␄,␚␁␞␂�␁␄␘␄<␚␁␟␂�␁␄␜␄<␚␁ ␂�␁␄ ␄<␚␁!␂�␁␄$␄<␚␁"␂�␁␄(␄<␚␁#␂�␁␄,␄<␚␁$␂�␁␄0␄<␚␁%␂�␁␄␄␄L␚␁&␂�␁␄␈␄L␚␁'␂�␁␄␌␄L␚␁(␂�␁␄␐␄L␚␁)␂�␁␄␔␄L␚␁*␂�␁␄␘␄L␚␁+␂�␁␄␜␄L␚␁,␂�␁␄ ␄L␚␁-␂�␁␄$␄L␚␁.␂�␁␄(␄L␚␁/␂�␁␄,␄L␚␁0␂�␁␄0␄L␚␁1␂�␁␄␄␄\␚␁2␂�␁␄␈␄\␚␁3␂�␁␄␌␄\␚␁4␂�␁␄␐␄\␚␁5␂�␁␄␔␄\␚␁6␂�␁␄␘␄\␚␁7␂�␁␄␜␄\␚␁8␂�␁␄ ␄\␚␁9␂�␁␄$␄\␚␁:␂�␁␄(␄\␚␁;␂�␁␄,␄\␚ {
+"CMSSW_version": "CMSSW_16_0_0_pre4",
+"architecture": "el9_amd64_gcc13",
+"technology": "boost/serialization",
+"tech_version": "1_80"
+ }
+dummy2026-01-12 14:16:12.261200
+␁	K	K�2␃	]I�~�"␗A0384569ebfd8a2edbca1cf142200a8cf4efd9580TrackerDetToDTCELinkCablingMap␡␁␓␁H␁␡␄0␄l␚␁H␁␂␄,␄l␚␁G␁␂␄(␄l␚␁F␁␂␄$␄l␚␁E␁␂␄ ␄l␚␁D␁␂␄␜␄l␚␁C␁␂␄␘␄l␚␁B␁␂␄␔␄l␚␁A␁␂␄␐␄l␚␁@␁␂␄␌␄l␚␁?␁␂␄␈␄l␚␁>␁␂␄␄␄l␚␁=␁␂␄0␄\␚␁<␁␂␄␌␄<␚␁␛␁␁␄(␄,␚␁␖␁␁␄␈␄<␚␁␚␁␁␄$␄,␚␁␕␁␁␄␄␄<␚␁␙␁␁␄ ␄,␚␁␔␁␁␄0␄,␚␁␘␁␁␄␔␄<␚␁␝␁␁␄,␄,␚␁␗␁␁␄␐␄<␚␁␜␁␁␄␜␄,␚␁␓␁␁␄␘␄,␚␁␒␁␁␄␔␄,␚␁␑␁␁␄0␄␜␚␁␌␁␁␄␐␄,␚␁␐␁␁␄,␄␜␚␁␋␁␁␄␌␄,␚␁␏␁␁␄(␄␜␚␁
+␁␁␄␈␄,␚␁␎␁␁␄$␄␜␚␁	␁␁␄␄␄␜␚␁␁␁␁␄␈␄␜␚␁␂␁␁␄␌␄␜␚␁␃␁␁␄␐␄␜␚␁␄␁␁␄␔␄␜␚␁␅␁␁␄␘␄␜␚␁␆␁␁␄␜␄␜␚␁␇␁␁␄ ␄␜␚␁␈␁␁␄␄␄,␚␁
+␁␁␄␘␄<␚␁␞␁␁␄␜␄<␚␁␟␁␁␄ ␄<␚␁ ␁␁␄␄␄L␚␁%␁␂␄$␄<␚␁!␁␁␄␈␄L␚␁&␁␂␄(␄<␚␁"␁␁␄␌␄L␚␁'␁␂␄,␄<␚␁#␁␁␄␐␄L␚␁(␁␂␄0␄<␚␁$␁␁␄␔␄L␚␁)␁␂␄␘␄L␚␁*␁␂␄␜␄L␚␁+␁␂␄ ␄L␚␁,␁␂␄␄␄\␚␁1␁␂␄$␄L␚␁-␁␂␄␈␄\␚␁2␁␂␄(␄L␚␁.␁␂␄␌␄\␚␁3␁␂␄,␄L␚␁/␁␂␄␐␄\␚␁4␁␂␄0␄L␚␁0␁␂␄␔␄\␚␁5␁␂␄␘␄\␚␁6␁␂␄␜␄\␚␁7␁␂␄ ␄\␚␁8␁␂␄$␄\␚␁9␁␂␄(␄\␚␁:␁␂␄,␄\␚␁;␁␂␁H␁␡␁H␁␂␄0␄l␚␁G␁␂␄,␄l␚␁F␁␂␄(␄l␚␁E␁␂␄$␄l␚␁D␁␂␄ ␄l␚␁C␁␂␄␜␄l␚␁B␁␂␄␘␄l␚␁A␁␂␄␔␄l␚␁@␁␂␄␐␄l␚␁?␁␂␄␌␄l␚␁>␁␂␄␈␄l␚␁=␁␂␄␄␄l␚␁<␁␂␄0␄\␚␁␝␁␁␄␔␄<␚␁␜␁␁␄␐␄<␚␁␛␁␁␄␌␄<␚␁␚␁␁␄␈␄<␚␁␙␁␁␄␄␄<␚␁␘␁␁␄0␄,␚␁␗␁␁␄,␄,␚␁␖␁␁␄(␄,␚␁␕␁␁␄$␄,␚␁␔␁␁␄ ␄,␚␁;␁␂␄,␄\␚␁␓␁␁␄␜␄,␚␁:␁␂␄(␄\␚␁␒␁␁␄␘␄,␚␁9␁␂␄$␄\␚␁␑␁␁␄␔␄,␚␁8␁␂␄ ␄\␚␁␐␁␁␄␐␄,␚␁7␁␂␄␜␄\␚␁␏␁␁␄␌␄,␚␁6␁␂␄␘␄\␚␁␎␁␁␄␈␄,␚␁5␁␂␄␔␄\␚␁␁␁␁␄␄␄␜␚␁(␁␂␄␐␄L␚␁␂␁␁␄␈␄␜␚␁)␁␂␄␔␄L␚␁␃␁␁␄␌␄␜␚␁*␁␂␄␘␄L␚␁␄␁␁␄␐␄␜␚␁+␁␂␄␜␄L␚␁␅␁␁␄␔␄␜␚␁,␁␂␄ ␄L␚␁␆␁␁␄␘␄␜␚␁-␁␂␄$␄L␚␁␇␁␁␄␜␄␜␚␁.␁␂␄(␄L␚␁␈␁␁␄ ␄␜␚␁/␁␂␄,␄L␚␁	␁␁␄$␄␜␚␁0␁␂␄0␄L␚␁
+␁␁␄(␄␜␚␁1␁␂␄␄␄\␚␁␋␁␁␄,␄␜␚␁2␁␂␄␈␄\␚␁␌␁␁␄0␄␜␚␁3␁␂␄␌␄\␚␁
+␁␁␄␄␄,␚␁4␁␂␄␐␄\␚␁␞␁␁␄␘␄<␚␁␟␁␁␄␜␄<␚␁ ␁␁␄ ␄<␚␁!␁␁␄$␄<␚␁"␁␁␄(␄<␚␁#␁␁␄,␄<␚␁$␁␁␄0␄<␚␁%␁␂␄␄␄L␚␁&␁␂␄␈␄L␚␁'␁␂␄␌␄L␚ {
+"CMSSW_version": "CMSSW_16_0_0_pre4",
+"architecture": "el9_amd64_gcc13",
+"technology": "boost/serialization",
+"tech_version": "1_80"
+ }
+dummy2026-01-12 15:28:56.568921
