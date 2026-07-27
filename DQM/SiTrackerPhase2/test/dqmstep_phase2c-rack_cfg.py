@@ -40,7 +40,7 @@ process.maxEvents = cms.untracked.PSet(
 
 # Input source
 process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring('file:/eos/user/h/hrejebsf/CRACK/CRACK_MC_260126.root'),
+    fileNames = cms.untracked.vstring('file:/afs/cern.ch/user/f/fiorendi/public/l1tt/unpacker/crack/forLisa/clusters_DAQ_FMT_v1_0_Noise_Test_3_Large_1_Ladder_RDB.root'),
     secondaryFileNames = cms.untracked.vstring()
 )
 
@@ -64,7 +64,7 @@ process.options = cms.untracked.PSet(
     numberOfConcurrentLuminosityBlocks = cms.untracked.uint32(1),
     numberOfConcurrentRuns = cms.untracked.uint32(1),
     numberOfStreams = cms.untracked.uint32(0),
-    numberOfThreads = cms.untracked.uint32(4),
+    numberOfThreads = cms.untracked.uint32(1),
     printDependencies = cms.untracked.bool(False),
     sizeOfStackForThreadsInKB = cms.optional.untracked.uint32,
     throwIfIllegalParameter = cms.untracked.bool(True),
@@ -97,9 +97,9 @@ process.trackerGeometry.applyAlignment = False
 process.mix.playback = True
 process.mix.digitizers = cms.PSet()
 for a in process.aliases: delattr(process, a)
-process.RandomNumberGeneratorService.restoreStateLabel=cms.untracked.string("randomEngineStateProducer")
+#process.RandomNumberGeneratorService.restoreStateLabel=cms.untracked.string("randomEngineStateProducer")
 from Configuration.AlCa.GlobalTag import GlobalTag
-process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:phase2_realistic_T35', '')
+process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:phase2_realistic_0T', '')
 
 # Path and EndPath definitions
 process.raw2digi_step = cms.Path(process.RawToDigi)
@@ -117,8 +117,9 @@ process.DQMoutput_step = cms.EndPath(process.DQMoutput)
 #process.load('DQM.SiTrackerPhase2.Phase2OTMonitorRecHit_cfi')
 process.load('DQM.SiTrackerPhase2.Phase2CRackDQMFirstStep_cff')
 #process.otdqm_seq = cms.Sequence(process.trackerphase2DQMSource.copy()*process.Phase2OTMonitorRecHit)
+process.event_content = cms.EDAnalyzer("EventContentAnalyzer")
 process.otdqm_seq = cms.Sequence(process.trackerphase2DQMSource.copy())
-process.dqm_step=cms.Path(process.otdqm_seq)
+process.dqm_step=cms.Path(process.otdqm_seq * process.event_content)
 
 
 # Schedule definition
