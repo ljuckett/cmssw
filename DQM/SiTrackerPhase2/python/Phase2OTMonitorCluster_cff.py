@@ -59,6 +59,6 @@ clusterMonitorCRACK = Phase2OTMonitorCluster.clone(
     NClustersLayer_S = Phase2OTMonitorCluster.NClustersLayer_S.clone(
         xmax = cms.double(50.0),
         NxBins = cms.int32(50)
-    )
-    #clusterSrc = cms.InputTag('siPhase2Clusters'),
+    ),
+    clusterSrc = cms.InputTag("Unpacker", "", "UNPACK") # only for unpacked clusters from CRACK, not MC
 )

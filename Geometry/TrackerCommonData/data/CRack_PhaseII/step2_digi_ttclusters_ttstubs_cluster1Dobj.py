@@ -38,7 +38,7 @@ process.source = cms.Source("PoolSource",
     dropDescendantsOfDroppedBranches = cms.untracked.bool(False),
     #fileNames = cms.untracked.vstring('file:Geometry/TrackerCommonData/data/CRack_PhaseII/step1.root'),
     #replace this file with the file in your local directory.
-    fileNames = cms.untracked.vstring('file:step1.root'),
+    fileNames = cms.untracked.vstring('file:/eos/user/l/ljuckett/CRack_DQM_Experiments/step1_CMSSW20.root'),
     inputCommands = cms.untracked.vstring(
         'keep *',
         'drop *_genParticles_*_*',
@@ -107,7 +107,7 @@ process.FEVTDEBUGoutput = cms.OutputModule("PoolOutputModule",
         dataTier = cms.untracked.string('GEN-SIM-DIGI'),
         filterName = cms.untracked.string('')
     ),
-    fileName = cms.untracked.string('file:step2.root'),
+    fileName = cms.untracked.string('file:/eos/user/l/ljuckett/CRack_DQM_Experiments/step2_CMSSW20.root'),
     outputCommands = process.FEVTDEBUGEventContent.outputCommands,
     splitLevel = cms.untracked.int32(0)
 )

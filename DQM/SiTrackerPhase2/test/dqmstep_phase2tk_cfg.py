@@ -35,13 +35,14 @@ process.load('DQMOffline.Configuration.DQMOffline_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(10),
+    input = cms.untracked.int32(50),
     output = cms.optional.untracked.allowed(cms.int32,cms.PSet)
 )
 
 # Input source
 process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring('/store/relval/CMSSW_16_1_0_pre2/RelValTTbar_14TeV/GEN-SIM-RECO/PU_150X_mcRun4_realistic_v1_STD_Run4D110_PU-v1/2590000/06bf4d43-0cb7-450a-8b94-c29f447d84e9.root'),
+    #fileNames = cms.untracked.vstring('/store/relval/CMSSW_20_0_0/RelValTTbar_14TeV/GEN-SIM-RECO/150X_mcRun4_realistic_v1_STD_D127_RegeneratedGS_noPU_20260811_074403_RV12-v1/2590000/04782db6-462c-49e8-8800-e264feaf170c.root'),
+    fileNames = cms.untracked.vstring("/store/relval/CMSSW_20_0_0_pre1/RelValTTbar_14TeV/GEN-SIM-RECO/PU_150X_mcRun4_realistic_v1_STD_D121_RegeneratedGS_PU-v1/2590000/000454e5-90d8-492c-acc5-80b8d9d5c6c4.root"),
     secondaryFileNames = cms.untracked.vstring()
 )
 
@@ -65,7 +66,7 @@ process.options = cms.untracked.PSet(
     numberOfConcurrentLuminosityBlocks = cms.untracked.uint32(1),
     numberOfConcurrentRuns = cms.untracked.uint32(1),
     numberOfStreams = cms.untracked.uint32(0),
-    numberOfThreads = cms.untracked.uint32(4),
+    numberOfThreads = cms.untracked.uint32(1),
     printDependencies = cms.untracked.bool(False),
     sizeOfStackForThreadsInKB = cms.optional.untracked.uint32,
     throwIfIllegalParameter = cms.untracked.bool(True),
@@ -122,13 +123,13 @@ process.load('Validation.SiTrackerPhase2V.Phase2TrackerValidationFirstStep_cff')
 process.otvalid_seq = cms.Sequence(process.trackerphase2ValidationSource.copy())
 
 process.dqm_step=cms.Path(process.otdqm_seq)
-#process.validation_step=cms.Path(process.otvalid_seq)
+process.validation_step=cms.Path(process.otvalid_seq)
 
 
 # Schedule definition
 process.schedule = cms.Schedule(process.rechits_step,
                                 process.dqm_step,
-                                #process.validation_step,
+                                process.validation_step,
                                 process.DQMoutput_step
 )
 # customisation of the process.

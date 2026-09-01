@@ -83,9 +83,9 @@ process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:phase2_realistic_T35', ''
 
 # Path and EndPath definitions
 ##default path in production
-#process.trackerphase2ValidationHarvesting_step = cms.Path(process.trackerphase2ValidationHarvesting)
+process.trackerphase2ValidationHarvesting_step = cms.Path(process.trackerphase2ValidationHarvesting)
 process.dqmsave_step = cms.Path(process.DQMSaver)
 
 # Schedule definition
-#process.schedule = cms.Schedule(process.trackerphase2ValidationHarvesting_step, process.dqmsave_step)
-process.schedule = cms.Schedule(process.dqmsave_step)
+process.schedule = cms.Schedule(process.trackerphase2ValidationHarvesting_step, process.dqmsave_step)
+#process.schedule = cms.Schedule(process.dqmsave_step)

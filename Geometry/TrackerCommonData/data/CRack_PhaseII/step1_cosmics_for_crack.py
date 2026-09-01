@@ -97,7 +97,7 @@ process.FEVTDEBUGoutput = cms.OutputModule("PoolOutputModule",
         dataTier = cms.untracked.string('GEN-SIM'),
         filterName = cms.untracked.string('')
     ),
-    fileName = cms.untracked.string('file:step1.root'),
+    fileName = cms.untracked.string('file:/eos/user/l/ljuckett/CRack_DQM_Experiments/step1_CMSSW20.root'),
     outputCommands = process.FEVTDEBUGEventContent.outputCommands,
     splitLevel = cms.untracked.int32(0)
 )
@@ -156,6 +156,38 @@ process.generator = cms.EDProducer("CosMuoGenProducer",
     NuProdAlt = cms.double(5000.0),    # production altitude in mm
 
 )
+process.cosmicInCRACK = cms.EDFilter("CosmicGenFilterHelix",
+    charges = cms.vint32(1, -1),
+    doMonitor = cms.untracked.bool(False),
+    maxZ = cms.double(100.0),
+    minP = cms.double(0.0),
+    minPt = cms.double(0.0),
+    minZ = cms.double(-100.0),
+    pdgIds = cms.vint32(-13, 13),
+    propagator = cms.string('SteppingHelixPropagatorAlong'),
+    radius = cms.double(20.0),
+    src = cms.InputTag("generator","unsmeared")
+)
+process.SteppingHelixPropagatorAlong = cms.ESProducer("SteppingHelixPropagatorESProducer",
+    ApplyRadX0Correction = cms.bool(True),
+    AssumeNoMaterial = cms.bool(False),
+    ComponentName = cms.string('SteppingHelixPropagatorAlong'),
+    NoErrorPropagation = cms.bool(False),
+    PropagationDirection = cms.string('alongMomentum'),
+    SetVBFPointer = cms.bool(False),
+    VBFName = cms.string('VolumeBasedMagneticField'),
+    debug = cms.bool(False),
+    endcapShiftInZNeg = cms.double(0.0),
+    endcapShiftInZPos = cms.double(0.0),
+    returnTangentPlane = cms.bool(True),
+    sendLogWarning = cms.bool(False),
+    useEndcapShiftsInZ = cms.bool(False),
+    useInTeslaFromMagField = cms.bool(False),
+    useIsYokeFlag = cms.bool(True),
+    useMagVolumes = cms.bool(True),
+    useMatVolumes = cms.bool(True),
+    useTuningForL2Speed = cms.bool(False)
+)
 
 process.trackerGeometry.applyAlignment = False
 
@@ -171,7 +203,7 @@ process.MessageLogger = cms.Service("MessageLogger",
 )
 
 
-process.ProductionFilterSequence = cms.Sequence(process.generator)
+process.ProductionFilterSequence = cms.Sequence(process.generator+process.cosmicInCRACK)
 
 
 process.g4SimHits.OnlySDs = [

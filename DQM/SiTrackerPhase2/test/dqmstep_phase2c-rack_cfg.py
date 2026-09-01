@@ -40,7 +40,7 @@ process.maxEvents = cms.untracked.PSet(
 
 # Input source
 process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring('file:/eos/user/h/hrejebsf/CRACK/CRACK_MC_260126.root'),
+    fileNames = cms.untracked.vstring('file:/eos/user/l/ljuckett/CRack_DQM_Experiments/Crack_data_unpacked/Unpacked_CRACK_Physiscs_Run_July_2026.root'),
     secondaryFileNames = cms.untracked.vstring()
 )
 
@@ -99,7 +99,7 @@ process.mix.digitizers = cms.PSet()
 for a in process.aliases: delattr(process, a)
 process.RandomNumberGeneratorService.restoreStateLabel=cms.untracked.string("randomEngineStateProducer")
 from Configuration.AlCa.GlobalTag import GlobalTag
-process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:phase2_realistic_T35', '')
+process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:phase2_realistic_0T', '')
 
 # Path and EndPath definitions
 process.raw2digi_step = cms.Path(process.RawToDigi)
