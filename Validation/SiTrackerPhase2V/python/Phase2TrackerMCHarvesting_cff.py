@@ -15,14 +15,6 @@ Phase2ITtrackingrechitHarvester=Phase2ITRechitHarvester.clone(
 ##As of now this is to be used in standalone mode
 Phase2OTRechitHarvester_PS=Phase2ITRechitHarvester.clone(
     TopFolder = cms.string('TrackerPhase2OTRecHitV'),
-    ShellNames = ["PLUS", "MINUS"],
-    NbarrelLayers = cms.uint32(3),
-    NDisk1Rings = cms.uint32(10),
-    NDisk1Wheels = cms.uint32(2),
-    NDisk2Rings = cms.uint32(7),
-    NDisk2Wheels = cms.uint32(3),
-    EcapDisk1Name = cms.string('TEDD_1'),
-    EcapDisk2Name = cms.string('TEDD_2'),
     ResidualXvsEta = cms.string('Delta_X_vs_Eta_Pixel'),
     ResidualXvsPhi = cms.string('Delta_X_vs_Phi_Pixel'),
     ResidualYvsEta = cms.string('Delta_Y_vs_Eta_Pixel'),
@@ -38,9 +30,6 @@ Phase2OTRechitHarvester_PS.meanXvsphi.name = cms.string('meanXFitvsphi_Pixel')
 Phase2OTRechitHarvester_PS.meanYvsphi.name = cms.string('meanYFitvsphi_Pixel')
 
 Phase2OTRechitHarvester_2S=Phase2OTRechitHarvester_PS.clone(
-    NbarrelLayers = cms.uint32(3),
-    NDisk1Rings = cms.uint32(15),
-    NDisk2Rings = cms.uint32(11),
     ResidualXvsEta = cms.string('Delta_X_vs_Eta_Strip'),
     ResidualXvsPhi = cms.string('Delta_X_vs_Phi_Strip'),
     ResidualYvsEta = cms.string('Delta_Y_vs_Eta_Strip'),

@@ -50,14 +50,15 @@ protected:
   void bookLayerHistos(DQMStore::IBooker& ibooker, unsigned int det_id, std::string& subdir);
   void fillRechitHistos(const PSimHit* simhitClosest,
                         const SiPixelRecHit* rechit,
-                        const std::map<unsigned int, SimTrack>& selectedSimTrackMap,
-                        std::map<std::string, unsigned int>& nrechitLayerMap_primary);
+                        const std::map<unsigned int, SimTrack>& selectedSimTrackMap);
 
   edm::ParameterSet config_;
   const edm::ESGetToken<TrackerGeometry, TrackerDigiGeometryRecord> geomToken_;
   const edm::ESGetToken<TrackerTopology, TrackerTopologyRcd> topoToken_;
   const TrackerGeometry* tkGeom_ = nullptr;
   const TrackerTopology* tTopo_ = nullptr;
+
+  enum Level { IT = 1, SUBSTRUCTURE, SHELL, ENDCAP_RING, ENDCAP_WHEEL, LAYER };
 
   struct RecHitME {
     MonitorElement* deltaX = nullptr;
@@ -84,6 +85,7 @@ protected:
     MonitorElement* pullY_primary;
     MonitorElement* deltaX_primary;
     MonitorElement* deltaY_primary;
+    unsigned int primaryRecHitCounter = 0;
   };
   std::map<std::string, RecHitME> layerMEs_;
 };

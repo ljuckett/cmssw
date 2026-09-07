@@ -114,21 +114,11 @@ void Phase2ITValidateRecHit::fillITHistos(const edm::Event& iEvent,
   const auto& rechits = iEvent.getHandle(tokenRecHitsIT_);
   if (!rechits.isValid())
     return;
-  std::map<std::string, unsigned int> nrechitLayerMap_primary;
   // Loop over modules
   for (const auto& DSViter : *rechits) {
     // Get the detector unit's id
     unsigned int rawid(DSViter.detId());
     DetId detId(rawid);
-    const GeomDet* geomDet = tkGeom_->idToDet(detId);
-    GlobalPoint detPos = geomDet->surface().toGlobal(Local2DPoint(0, 0));
-    // determine the detector we are in
-    std::string key = phase2tkutil::getHistoId(detId.rawId(), tTopo_, detPos.phi(), 6, false);
-    if (nrechitLayerMap_primary.find(key) == nrechitLayerMap_primary.end()) {
-      nrechitLayerMap_primary.emplace(key, DSViter.size());
-    } else {
-      nrechitLayerMap_primary[key] += DSViter.size();
-    }
     //loop over rechits for a single detId
     for (const auto& rechit : DSViter) {
       //GetSimHits
@@ -154,14 +144,15 @@ void Phase2ITValidateRecHit::fillITHistos(const edm::Event& iEvent,
         continue;
 
       // call the base class method to fill the plots
-      fillRechitHistos(simhitClosest, &rechit, selectedSimTrackMap, nrechitLayerMap_primary);
-
+      fillRechitHistos(simhitClosest, &rechit, selectedSimTrackMap);
     }  //end loop over rechits of a detId
   }  //End loop over DetSetVector
-
   //fill nRecHit counter per layer
-  for (const auto& lme : nrechitLayerMap_primary) {
-    layerMEs_[lme.first].numberRecHitsprimary->Fill(nrechitLayerMap_primary[lme.first]);
+  for (auto& lme : layerMEs_) {
+    RecHitME& local_mes = lme.second;
+    if (local_mes.numberRecHitsprimary)
+      local_mes.numberRecHitsprimary->Fill(local_mes.primaryRecHitCounter);
+    local_mes.primaryRecHitCounter = 0;
   }
 }
 

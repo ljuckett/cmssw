@@ -115,8 +115,6 @@ void Phase2ITValidateTrackingRecHit::fillITHistos(const edm::Event& iEvent,
   if (!tracks.isValid())
     return;
 
-  std::map<std::string, unsigned int> nrechitLayerMap_primary;
-
   // loop over tracks
   for (const auto& track : *tracks) {
     // loop over hits
@@ -129,19 +127,9 @@ void Phase2ITValidateTrackingRecHit::fillITHistos(const edm::Event& iEvent,
       auto subdetid = (id.subdetId());
       if (!(subdetid == PixelSubdetector::PixelBarrel) && !(subdetid == PixelSubdetector::PixelEndcap))
         continue;
-
       const GeomDetUnit* geomDetunit(tkGeom_->idToDetUnit(id));
       if (!geomDetunit)
         continue;
-      GlobalPoint detPos = geomDetunit->surface().toGlobal(Local2DPoint(0, 0));
-      // determine the detector we are in
-      std::string key = phase2tkutil::getHistoId(id.rawId(), tTopo_, detPos.phi(), 6, false);
-      if (nrechitLayerMap_primary.find(key) == nrechitLayerMap_primary.end()) {
-        nrechitLayerMap_primary.emplace(key, 1);
-      } else {
-        nrechitLayerMap_primary[key] += 1;
-      }
-
       const SiPixelRecHit* rechit = dynamic_cast<const SiPixelRecHit*>(hit);
       if (!rechit)
         continue;
@@ -169,14 +157,17 @@ void Phase2ITValidateTrackingRecHit::fillITHistos(const edm::Event& iEvent,
         continue;
 
       // call the base class method to fill the plots
-      fillRechitHistos(simhitClosest, rechit, selectedSimTrackMap, nrechitLayerMap_primary);
+      fillRechitHistos(simhitClosest, rechit, selectedSimTrackMap);
 
     }  // loop over tracking rechits
   }  // loop over tracks
 
   //fill nRecHit counter per layer
-  for (const auto& lme : nrechitLayerMap_primary) {
-    layerMEs_[lme.first].numberRecHitsprimary->Fill(nrechitLayerMap_primary[lme.first]);
+  for (auto& lme : layerMEs_) {
+    RecHitME& local_mes = lme.second;
+    if (local_mes.numberRecHitsprimary)
+      local_mes.numberRecHitsprimary->Fill(local_mes.primaryRecHitCounter);
+    local_mes.primaryRecHitCounter = 0;
   }
 }
 

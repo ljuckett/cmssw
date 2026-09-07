@@ -47,94 +47,102 @@ void Phase2ITValidateRecHitBase::bookHistograms(DQMStore::IBooker& ibooker,
   }
 }
 
-//
 void Phase2ITValidateRecHitBase::bookLayerHistos(DQMStore::IBooker& ibooker, unsigned int det_id, std::string& subdir) {
   ibooker.cd();
   const GeomDet* geomDet = tkGeom_->idToDet(det_id);
   GlobalPoint detPos = geomDet->surface().toGlobal(Local2DPoint(0, 0));
-  std::string key = phase2tkutil::getHistoId(det_id, tTopo_, detPos.phi(), 6, false);
-  if (layerMEs_.find(key) == layerMEs_.end()) {
-    ibooker.cd();
-    RecHitME local_histos;
-    ibooker.setCurrentFolder(subdir);
-    local_histos.deltaPhi_barrel =
-        phase2tkutil::book1DFromPSet(config_.getParameter<edm::ParameterSet>("Delta_Phi_barrel"), ibooker);
-    local_histos.deltaPhi_endcaps =
-        phase2tkutil::book1DFromPSet(config_.getParameter<edm::ParameterSet>("Delta_Phi_endcaps"), ibooker);
-    ibooker.setCurrentFolder(subdir + "/" + key);
-    edm::LogInfo("Phase2ITValidateRecHit") << " Booking Histograms in : " << (subdir + "/" + key);
+  for (enum Level bookingDepth = IT; bookingDepth <= LAYER; bookingDepth = Level(bookingDepth + 1)) {
+    // Validation: Only book at IT, SUBSTRUCTURE, and LAYER
+    if (bookingDepth == SHELL || bookingDepth == ENDCAP_RING || bookingDepth == ENDCAP_WHEEL)
+      continue;
+    std::string key = phase2tkutil::getHistoId(det_id, tTopo_, detPos.phi(), bookingDepth, false);
+    std::string prettyName = phase2tkutil::getHistoId(det_id, tTopo_, detPos.phi(), bookingDepth, true);
+    if (layerMEs_.find(key) == layerMEs_.end()) {
+      ibooker.cd();
+      RecHitME local_histos;
+      ibooker.setCurrentFolder(subdir);
+      ibooker.setCurrentFolder(subdir + "/" + key);
+      edm::LogInfo("Phase2ITValidateRecHit") << " Booking Histograms in : " << (subdir + "/" + key);
 
-    local_histos.deltaX = phase2tkutil::book1DFromPSet(config_.getParameter<edm::ParameterSet>("DeltaX"), ibooker);
+      local_histos.deltaX =
+          phase2tkutil::book1DFromPSet(config_.getParameter<edm::ParameterSet>("DeltaX"), ibooker, prettyName);
 
-    local_histos.deltaY = phase2tkutil::book1DFromPSet(config_.getParameter<edm::ParameterSet>("DeltaY"), ibooker);
+      local_histos.deltaY =
+          phase2tkutil::book1DFromPSet(config_.getParameter<edm::ParameterSet>("DeltaY"), ibooker, prettyName);
 
-    local_histos.pullX = phase2tkutil::book1DFromPSet(config_.getParameter<edm::ParameterSet>("PullX"), ibooker);
+      local_histos.pullX =
+          phase2tkutil::book1DFromPSet(config_.getParameter<edm::ParameterSet>("PullX"), ibooker, prettyName);
 
-    local_histos.pullY = phase2tkutil::book1DFromPSet(config_.getParameter<edm::ParameterSet>("PullY"), ibooker);
+      local_histos.pullY =
+          phase2tkutil::book1DFromPSet(config_.getParameter<edm::ParameterSet>("PullY"), ibooker, prettyName);
 
-    local_histos.deltaPhi = phase2tkutil::book1DFromPSet(config_.getParameter<edm::ParameterSet>("Delta_Phi"), ibooker);
+      local_histos.deltaPhi =
+          phase2tkutil::book1DFromPSet(config_.getParameter<edm::ParameterSet>("DeltaPhi"), ibooker, prettyName);
 
-    local_histos.deltaX_eta =
-        phase2tkutil::book2DFromPSet(config_.getParameter<edm::ParameterSet>("DeltaX_eta"), ibooker);
+      local_histos.deltaX_eta =
+          phase2tkutil::book2DFromPSet(config_.getParameter<edm::ParameterSet>("DeltaX_eta"), ibooker, prettyName);
 
-    local_histos.deltaX_phi =
-        phase2tkutil::book2DFromPSet(config_.getParameter<edm::ParameterSet>("DeltaX_phi"), ibooker);
+      local_histos.deltaX_phi =
+          phase2tkutil::book2DFromPSet(config_.getParameter<edm::ParameterSet>("DeltaX_phi"), ibooker, prettyName);
 
-    local_histos.deltaY_eta =
-        phase2tkutil::book2DFromPSet(config_.getParameter<edm::ParameterSet>("DeltaY_eta"), ibooker);
+      local_histos.deltaY_eta =
+          phase2tkutil::book2DFromPSet(config_.getParameter<edm::ParameterSet>("DeltaY_eta"), ibooker, prettyName);
 
-    local_histos.deltaY_phi =
-        phase2tkutil::book2DFromPSet(config_.getParameter<edm::ParameterSet>("DeltaY_phi"), ibooker);
+      local_histos.deltaY_phi =
+          phase2tkutil::book2DFromPSet(config_.getParameter<edm::ParameterSet>("DeltaY_phi"), ibooker, prettyName);
 
-    local_histos.deltaX_clsizex =
-        phase2tkutil::bookProfile1DFromPSet(config_.getParameter<edm::ParameterSet>("DeltaX_clsizex"), ibooker);
+      local_histos.deltaX_clsizex = phase2tkutil::bookProfile1DFromPSet(
+          config_.getParameter<edm::ParameterSet>("DeltaX_clsizeX"), ibooker, prettyName);
 
-    local_histos.deltaX_clsizey =
-        phase2tkutil::bookProfile1DFromPSet(config_.getParameter<edm::ParameterSet>("DeltaX_clsizey"), ibooker);
+      local_histos.deltaX_clsizey = phase2tkutil::bookProfile1DFromPSet(
+          config_.getParameter<edm::ParameterSet>("DeltaX_clsizeY"), ibooker, prettyName);
 
-    local_histos.deltaY_clsizex =
-        phase2tkutil::bookProfile1DFromPSet(config_.getParameter<edm::ParameterSet>("DeltaY_clsizex"), ibooker);
+      local_histos.deltaY_clsizex = phase2tkutil::bookProfile1DFromPSet(
+          config_.getParameter<edm::ParameterSet>("DeltaY_clsizeX"), ibooker, prettyName);
 
-    local_histos.deltaY_clsizey =
-        phase2tkutil::bookProfile1DFromPSet(config_.getParameter<edm::ParameterSet>("DeltaY_clsizey"), ibooker);
+      local_histos.deltaY_clsizey = phase2tkutil::bookProfile1DFromPSet(
+          config_.getParameter<edm::ParameterSet>("DeltaY_clsizeY"), ibooker, prettyName);
 
-    local_histos.deltaYvsdeltaX =
-        phase2tkutil::book2DFromPSet(config_.getParameter<edm::ParameterSet>("DeltaY_vs_DeltaX"), ibooker);
+      local_histos.deltaYvsdeltaX = phase2tkutil::book2DFromPSet(
+          config_.getParameter<edm::ParameterSet>("DeltaY_vs_DeltaX"), ibooker, prettyName);
 
-    local_histos.pullX_eta =
-        phase2tkutil::bookProfile1DFromPSet(config_.getParameter<edm::ParameterSet>("PullX_eta"), ibooker);
+      local_histos.pullX_eta = phase2tkutil::bookProfile1DFromPSet(
+          config_.getParameter<edm::ParameterSet>("PullX_eta"), ibooker, prettyName);
 
-    local_histos.pullY_eta =
-        phase2tkutil::bookProfile1DFromPSet(config_.getParameter<edm::ParameterSet>("PullY_eta"), ibooker);
-    ibooker.setCurrentFolder(subdir + "/" + key + "/PrimarySimHits");
-    //all histos for Primary particles
-    local_histos.numberRecHitsprimary =
-        phase2tkutil::book1DFromPSet(config_.getParameter<edm::ParameterSet>("nRecHits_primary"), ibooker);
+      local_histos.pullY_eta = phase2tkutil::bookProfile1DFromPSet(
+          config_.getParameter<edm::ParameterSet>("PullY_eta"), ibooker, prettyName);
+      ibooker.setCurrentFolder(subdir + "/" + key + "/PrimarySimHits");
+      //all histos for Primary particles
+      local_histos.numberRecHitsprimary = phase2tkutil::book1DFromPSet(
+          config_.getParameter<edm::ParameterSet>("nRecHits_primary"), ibooker, prettyName);
 
-    local_histos.deltaX_primary =
-        phase2tkutil::book1DFromPSet(config_.getParameter<edm::ParameterSet>("DeltaX_primary"), ibooker);
+      edm::ParameterSet histoPSet = config_.getParameter<edm::ParameterSet>("DeltaX");
+      histoPSet.addParameter<std::string>("title", "Delta X of primary SimHits in {};#delta x [#mum];");
+      local_histos.deltaX_primary = phase2tkutil::book1DFromPSet(histoPSet, ibooker, prettyName);
 
-    local_histos.deltaY_primary =
-        phase2tkutil::book1DFromPSet(config_.getParameter<edm::ParameterSet>("DeltaY_primary"), ibooker);
+      histoPSet = config_.getParameter<edm::ParameterSet>("DeltaY");
+      histoPSet.addParameter<std::string>("title", "Delta Y of primary SimHits in {};#delta y [#mum];");
+      local_histos.deltaY_primary = phase2tkutil::book1DFromPSet(histoPSet, ibooker, prettyName);
 
-    local_histos.pullX_primary =
-        phase2tkutil::book1DFromPSet(config_.getParameter<edm::ParameterSet>("PullX_primary"), ibooker);
+      histoPSet = config_.getParameter<edm::ParameterSet>("PullX");
+      histoPSet.addParameter<std::string>("title", "Pull X of primary SimHits in {};pull x;");
+      local_histos.pullX_primary = phase2tkutil::book1DFromPSet(histoPSet, ibooker, prettyName);
 
-    local_histos.pullY_primary =
-        phase2tkutil::book1DFromPSet(config_.getParameter<edm::ParameterSet>("PullY_primary"), ibooker);
+      histoPSet = config_.getParameter<edm::ParameterSet>("PullY");
+      histoPSet.addParameter<std::string>("title", "Pull Y of primary SimHits in {};pull y;");
+      local_histos.pullY_primary = phase2tkutil::book1DFromPSet(histoPSet, ibooker, prettyName);
 
-    layerMEs_.emplace(key, local_histos);
+      layerMEs_.emplace(key, local_histos);
+    }
   }
 }
 
 void Phase2ITValidateRecHitBase::fillRechitHistos(const PSimHit* simhitClosest,
                                                   const SiPixelRecHit* rechit,
-                                                  const std::map<unsigned int, SimTrack>& selectedSimTrackMap,
-                                                  std::map<std::string, unsigned int>& nrechitLayerMap_primary) {
+                                                  const std::map<unsigned int, SimTrack>& selectedSimTrackMap) {
   auto id = rechit->geographicalId();
   const GeomDet* geomDet = tkGeom_->idToDet(id);
   GlobalPoint detPos = geomDet->surface().toGlobal(Local2DPoint(0, 0));
-  std::string key = phase2tkutil::getHistoId(id.rawId(), tTopo_, detPos.phi(), 6, false);
   const GeomDetUnit* geomDetunit(tkGeom_->idToDetUnit(id));
   if (!geomDetunit)
     return;
@@ -159,83 +167,98 @@ void Phase2ITValidateRecHitBase::fillRechitHistos(const PSimHit* simhitClosest,
   float eta = geomDetunit->surface().toGlobal(lp).eta();
   float phi = geomDetunit->surface().toGlobal(lp).phi();
   float dphi = phi - geomDetunit->surface().toGlobal(simlp).phi();
-  layerMEs_[key].deltaX->Fill(dx);
-  layerMEs_[key].deltaY->Fill(dy);
-  layerMEs_[key].pullX->Fill(pullx);
-  layerMEs_[key].pullY->Fill(pully);
-  layerMEs_[key].deltaPhi->Fill(dphi);
-  if (tTopo_->getITPixelLayerNumber(id) < 100) {
-    layerMEs_[key].deltaPhi_barrel->Fill(dphi);
-  } else {
-    layerMEs_[key].deltaPhi_endcaps->Fill(dphi);
-  }
 
-  layerMEs_[key].deltaX_eta->Fill(std::abs(eta), dx);
-  layerMEs_[key].deltaY_eta->Fill(std::abs(eta), dy);
-  layerMEs_[key].deltaX_phi->Fill(phi, dx);
-  layerMEs_[key].deltaY_phi->Fill(phi, dy);
+  for (enum Level fillingDepth = IT; fillingDepth <= LAYER; fillingDepth = Level(fillingDepth + 1)) {
+    // Skip filling for barrel detIds on endcap-only depths
+    if ((fillingDepth == ENDCAP_RING || fillingDepth == ENDCAP_WHEEL) &&
+        DetId(id.rawId()).subdetId() == PixelSubdetector::PixelBarrel)
+      continue;
+    std::string key = phase2tkutil::getHistoId(id.rawId(), tTopo_, detPos.phi(), fillingDepth, false);
+    if (layerMEs_[key].deltaX)
+      layerMEs_[key].deltaX->Fill(dx);
+    if (layerMEs_[key].deltaY)
+      layerMEs_[key].deltaY->Fill(dy);
+    if (layerMEs_[key].pullX)
+      layerMEs_[key].pullX->Fill(pullx);
+    if (layerMEs_[key].pullY)
+      layerMEs_[key].pullY->Fill(pully);
+    if (layerMEs_[key].deltaPhi)
+      layerMEs_[key].deltaPhi->Fill(dphi);
 
-  layerMEs_[key].deltaX_clsizex->Fill(rechit->cluster()->sizeX(), dx);
-  layerMEs_[key].deltaX_clsizey->Fill(rechit->cluster()->sizeY(), dx);
-  layerMEs_[key].deltaY_clsizex->Fill(rechit->cluster()->sizeX(), dy);
-  layerMEs_[key].deltaY_clsizey->Fill(rechit->cluster()->sizeY(), dy);
-  layerMEs_[key].deltaYvsdeltaX->Fill(dx, dy);
-  layerMEs_[key].pullX_eta->Fill(eta, pullx);
-  layerMEs_[key].pullY_eta->Fill(eta, pully);
-  if (isPrimary) {
-    layerMEs_[key].deltaX_primary->Fill(dx);
-    layerMEs_[key].deltaY_primary->Fill(dy);
-    layerMEs_[key].pullX_primary->Fill(pullx);
-    layerMEs_[key].pullY_primary->Fill(pully);
-  } else {
-    nrechitLayerMap_primary[key]--;
+    if (layerMEs_[key].deltaX_eta)
+      layerMEs_[key].deltaX_eta->Fill(std::abs(eta), dx);
+    if (layerMEs_[key].deltaY_eta)
+      layerMEs_[key].deltaY_eta->Fill(std::abs(eta), dy);
+    if (layerMEs_[key].deltaX_phi)
+      layerMEs_[key].deltaX_phi->Fill(phi, dx);
+    if (layerMEs_[key].deltaY_phi)
+      layerMEs_[key].deltaY_phi->Fill(phi, dy);
+
+    if (layerMEs_[key].deltaX_clsizex)
+      layerMEs_[key].deltaX_clsizex->Fill(rechit->cluster()->sizeX(), dx);
+    if (layerMEs_[key].deltaX_clsizey)
+      layerMEs_[key].deltaX_clsizey->Fill(rechit->cluster()->sizeY(), dx);
+    if (layerMEs_[key].deltaY_clsizex)
+      layerMEs_[key].deltaY_clsizex->Fill(rechit->cluster()->sizeX(), dy);
+    if (layerMEs_[key].deltaY_clsizey)
+      layerMEs_[key].deltaY_clsizey->Fill(rechit->cluster()->sizeY(), dy);
+    if (layerMEs_[key].deltaYvsdeltaX)
+      layerMEs_[key].deltaYvsdeltaX->Fill(dx, dy);
+    if (layerMEs_[key].pullX_eta)
+      layerMEs_[key].pullX_eta->Fill(eta, pullx);
+    if (layerMEs_[key].pullY_eta)
+      layerMEs_[key].pullY_eta->Fill(eta, pully);
+    if (isPrimary) {
+      if (layerMEs_[key].deltaX_primary)
+        layerMEs_[key].deltaX_primary->Fill(dx);
+      if (layerMEs_[key].deltaY_primary)
+        layerMEs_[key].deltaY_primary->Fill(dy);
+      if (layerMEs_[key].pullX_primary)
+        layerMEs_[key].pullX_primary->Fill(pullx);
+      if (layerMEs_[key].pullY_primary)
+        layerMEs_[key].pullY_primary->Fill(pully);
+      layerMEs_[key].primaryRecHitCounter++;
+    }
   }
 }
 
 void Phase2ITValidateRecHitBase::fillPSetDescription(edm::ParameterSetDescription& desc, bool tracking) {
   // TrackingRecHits have a larger range of delta phi values
   // The ranges are changed so validators can see the difference
-  double delta_phi_range;
-  if (tracking)
-    delta_phi_range = 0.5;
-  else
-    delta_phi_range = 0.005;
+  double delta_phi_range = tracking ? 0.5 : 0.005;
+  std::string product_name = tracking ? "TrackingRecHits" : "RecHits";
 
-  edm::ParameterSetDescription psd0;
-  psd0.add<std::string>("name", "Delta_X");
-  psd0.add<std::string>("title", "Delta_X;RecHit resolution X coordinate [#mum]");
-  psd0.add<bool>("switch", true);
-  psd0.add<double>("xmin", -100.0);
-  psd0.add<double>("xmax", 100.0);
-  psd0.add<int>("NxBins", 100);
-  desc.add<edm::ParameterSetDescription>("DeltaX", psd0);
-
-  edm::ParameterSetDescription psd1;
-  psd1.add<std::string>("name", "Delta_Y");
-  psd1.add<std::string>("title", "Delta_Y;RecHit resolution Y coordinate [#mum];");
-  psd1.add<bool>("switch", true);
-  psd1.add<double>("xmin", -100.0);
-  psd1.add<double>("xmax", 100.0);
-  psd1.add<int>("NxBins", 100);
-  desc.add<edm::ParameterSetDescription>("DeltaY", psd1);
-
-  edm::ParameterSetDescription psd2;
-  psd2.add<std::string>("name", "Pull_X");
-  psd2.add<std::string>("title", "Pull_X;pull x;");
-  psd2.add<double>("xmin", -4.0);
-  psd2.add<bool>("switch", true);
-  psd2.add<double>("xmax", 4.0);
-  psd2.add<int>("NxBins", 100);
-  desc.add<edm::ParameterSetDescription>("PullX", psd2);
-
-  edm::ParameterSetDescription psd3;
-  psd3.add<std::string>("name", "Pull_Y");
-  psd3.add<std::string>("title", "Pull_Y;pull y;");
-  psd3.add<double>("xmin", -4.0);
-  psd3.add<bool>("switch", true);
-  psd3.add<double>("xmax", 4.0);
-  psd3.add<int>("NxBins", 100);
-  desc.add<edm::ParameterSetDescription>("PullY", psd3);
+  phase2tkutil::add1DDesc(desc,
+                          "DeltaX",
+                          "Delta_X",
+                          "Delta X of " + product_name + " in {}",
+                          "RecHit resolution X coordinate [#mum]",
+                          "",
+                          100,
+                          -100.0,
+                          100.0);
+  phase2tkutil::add1DDesc(desc,
+                          "DeltaY",
+                          "Delta_Y",
+                          "Delta Y of " + product_name + " in {}",
+                          "RecHit resolution Y coordinate [#mum]",
+                          "",
+                          100,
+                          -100.0,
+                          100.0);
+  phase2tkutil::add1DDesc(
+      desc, "PullX", "Pull_X", "Pull X of " + product_name + " in {}", "Pull x", "", 100, -4.0, 4.0);
+  phase2tkutil::add1DDesc(
+      desc, "PullY", "Pull_Y", "Pull Y of " + product_name + " in {}", "Pull y", "", 100, -4.0, 4.0);
+  phase2tkutil::add1DDesc(desc,
+                          "DeltaPhi",
+                          "Delta_Phi",
+                          "Delta phi of " + product_name + " in {}",
+                          "phi",
+                          "",
+                          100,
+                          -delta_phi_range,
+                          delta_phi_range);
 
   edm::ParameterSetDescription psd4;
   psd4.add<std::string>("name", "Delta_X_vs_Eta");
@@ -251,7 +274,6 @@ void Phase2ITValidateRecHitBase::fillPSetDescription(edm::ParameterSetDescriptio
 
   edm::ParameterSetDescription psd4_y;
   psd4_y.add<std::string>("name", "Delta_X_vs_Phi");
-  ;
   psd4_y.add<std::string>("title", "Delta_X_vs_Phi;#phi;#Delta x [#mum]");
   psd4_y.add<int>("NyBins", 100);
   psd4_y.add<double>("ymin", -100.0);
@@ -286,159 +308,99 @@ void Phase2ITValidateRecHitBase::fillPSetDescription(edm::ParameterSetDescriptio
   psd5_y.add<double>("xmin", -M_PI);
   desc.add<edm::ParameterSetDescription>("DeltaY_phi", psd5_y);
 
-  edm::ParameterSetDescription psd6;
-  psd6.add<std::string>("name", "Delta_X_vs_ClusterSizeX");
-  psd6.add<std::string>("title", ";Cluster size X;#Delta x [#mum]");
-  psd6.add<double>("ymin", -100.0);
-  psd6.add<double>("ymax", 100.0);
-  psd6.add<int>("NxBins", 21);
-  psd6.add<bool>("switch", true);
-  psd6.add<double>("xmax", 20.5);
-  psd6.add<double>("xmin", -0.5);
-  desc.add<edm::ParameterSetDescription>("DeltaX_clsizex", psd6);
+  phase2tkutil::add2DDesc(desc,
+                          "DeltaX_clsizeX",
+                          "Delta_X_vs_ClusterSizeX",
+                          "Delta X of " + product_name + " vs cluster size X in {}",
+                          "Cluster size x",
+                          "Delta x [#mum]",
+                          21,
+                          -0.5,
+                          20.5,
+                          200,
+                          -100.0,
+                          100.0);
+  phase2tkutil::add2DDesc(desc,
+                          "DeltaX_clsizeY",
+                          "Delta_X_vs_ClusterSizeY",
+                          "Delta X of " + product_name + " vs cluster size Y in {}",
+                          "Cluster size y",
+                          "Delta x [#mum]",
+                          21,
+                          -0.5,
+                          20.5,
+                          200,
+                          -100.0,
+                          100.0);
+  phase2tkutil::add2DDesc(desc,
+                          "DeltaY_clsizeX",
+                          "Delta_Y_vs_ClusterSizeX",
+                          "Delta Y of " + product_name + " vs cluster size X in {}",
+                          "Cluster size x",
+                          "Delta y [#mum]",
+                          21,
+                          -0.5,
+                          20.5,
+                          200,
+                          -100.0,
+                          100.0);
+  phase2tkutil::add2DDesc(desc,
+                          "DeltaY_clsizeY",
+                          "Delta_Y_vs_ClusterSizeY",
+                          "Delta Y of " + product_name + " vs cluster size Y in {}",
+                          "Cluster size y",
+                          "Delta y [#mum]",
+                          21,
+                          -0.5,
+                          20.5,
+                          200,
+                          -100.0,
+                          100.0);
 
-  edm::ParameterSetDescription psd7;
-  psd7.add<std::string>("name", "Delta_X_vs_ClusterSizeY");
-  psd7.add<std::string>("title", ";Cluster size Y;#Delta x [#mum]");
-  psd7.add<double>("ymin", -100.0);
-  psd7.add<double>("ymax", 100.0);
-  psd7.add<int>("NxBins", 21);
-  psd7.add<bool>("switch", true);
-  psd7.add<double>("xmax", 20.5);
-  psd7.add<double>("xmin", -0.5);
-  desc.add<edm::ParameterSetDescription>("DeltaX_clsizey", psd7);
+  phase2tkutil::add2DDesc(desc,
+                          "DeltaY_vs_DeltaX",
+                          "Delta_Y_vs_Delta_X",
+                          "Delta Y vs Delta X of " + product_name + " in {}",
+                          "#Delta x [#mum]",
+                          "#Delta y [#mum]",
+                          100,
+                          -100.0,
+                          100.0,
+                          100,
+                          -100.0,
+                          100.0);
+  phase2tkutil::add2DDesc(desc,
+                          "PullX_eta",
+                          "Pull_X_vs_Eta",
+                          "Pull x vs eta of " + product_name + " in {}",
+                          "#eta",
+                          "pull x",
+                          82,
+                          -4.1,
+                          4.1,
+                          82,
+                          -4.1,
+                          4.1);
+  phase2tkutil::add2DDesc(desc,
+                          "PullY_eta",
+                          "Pull_Y_vs_Eta",
+                          "Pull y vs eta of " + product_name + " in {}",
+                          "#eta",
+                          "pull y",
+                          82,
+                          -4.1,
+                          4.1,
+                          82,
+                          -4.1,
+                          4.1);
 
-  edm::ParameterSetDescription psd8;
-  psd8.add<std::string>("name", "Delta_Y_vs_ClusterSizeX");
-  psd8.add<std::string>("title", ";Cluster size X;#Delta y [#mum]");
-  psd8.add<double>("ymin", -100.0);
-  psd8.add<double>("ymax", 100.0);
-  psd8.add<int>("NxBins", 21);
-  psd8.add<bool>("switch", true);
-  psd8.add<double>("xmax", 20.5);
-  psd8.add<double>("xmin", -0.5);
-  desc.add<edm::ParameterSetDescription>("DeltaY_clsizex", psd8);
-
-  edm::ParameterSetDescription psd9;
-  psd9.add<std::string>("name", "Delta_Y_vs_ClusterSizeY");
-  psd9.add<std::string>("title", ";Cluster size Y;#Delta y [#mum]");
-  psd9.add<double>("ymin", -100.0);
-  psd9.add<double>("ymax", 100.0);
-  psd9.add<int>("NxBins", 21);
-  psd9.add<bool>("switch", true);
-  psd9.add<double>("xmax", 20.5);
-  psd9.add<double>("xmin", -0.5);
-  desc.add<edm::ParameterSetDescription>("DeltaY_clsizey", psd9);
-
-  edm::ParameterSetDescription psd10;
-  psd10.add<std::string>("name", "Delta_Y_vs_DeltaX");
-  psd10.add<std::string>("title", ";#Delta x[#mum];#Delta y[#mum]");
-  psd10.add<bool>("switch", true);
-  psd10.add<double>("ymin", -100.0);
-  psd10.add<double>("ymax", 100.0);
-  psd10.add<int>("NyBins", 100);
-  psd10.add<double>("xmax", 100.);
-  psd10.add<double>("xmin", -100.);
-  psd10.add<int>("NxBins", 100);
-  desc.add<edm::ParameterSetDescription>("DeltaY_vs_DeltaX", psd10);
-
-  edm::ParameterSetDescription psd11;
-  psd11.add<std::string>("name", "Pull_X_vs_Eta");
-  psd11.add<std::string>("title", "Pull_X_vs_Eta;#eta;pull x");
-  psd11.add<double>("ymax", 4.0);
-  psd11.add<int>("NxBins", 82);
-  psd11.add<bool>("switch", true);
-  psd11.add<double>("xmax", 4.1);
-  psd11.add<double>("xmin", -4.1);
-  psd11.add<double>("ymin", -4.0);
-  desc.add<edm::ParameterSetDescription>("PullX_eta", psd11);
-
-  edm::ParameterSetDescription psd12;
-  psd12.add<std::string>("name", "Pull_Y_vs_Eta");
-  psd12.add<std::string>("title", "Pull_Y_vs_Eta;#eta;pull y");
-  psd12.add<double>("ymax", 4.0);
-  psd12.add<int>("NxBins", 82);
-  psd12.add<bool>("switch", true);
-  psd12.add<double>("xmax", 4.1);
-  psd12.add<double>("xmin", -4.1);
-  psd12.add<double>("ymin", -4.0);
-  desc.add<edm::ParameterSetDescription>("PullY_eta", psd12);
-
-  //simhits primary
-
-  edm::ParameterSetDescription psd13;
-  psd13.add<std::string>("name", "Number_RecHits_matched_PrimarySimTrack");
-  psd13.add<std::string>("title", "Number of RecHits matched to primary SimTrack;;");
-  psd13.add<double>("xmin", 0.0);
-  psd13.add<bool>("switch", true);
-  psd13.add<double>("xmax", 0.0);
-  psd13.add<int>("NxBins", 100);
-  desc.add<edm::ParameterSetDescription>("nRecHits_primary", psd13);
-
-  edm::ParameterSetDescription psd14;
-  psd14.add<std::string>("name", "Delta_X_SimHitPrimary");
-  psd14.add<std::string>("title", "Delta_X_SimHitPrimary;#delta x [#mum];");
-  psd14.add<double>("xmin", -100.0);
-  psd14.add<bool>("switch", true);
-  psd14.add<double>("xmax", 100.0);
-  psd14.add<int>("NxBins", 100);
-  desc.add<edm::ParameterSetDescription>("DeltaX_primary", psd14);
-
-  edm::ParameterSetDescription psd15;
-  psd15.add<std::string>("name", "Delta_Y_SimHitPrimary");
-  psd15.add<std::string>("title", "Delta_Y_SimHitPrimary;#Delta y [#mum];");
-  psd15.add<double>("xmin", -100.0);
-  psd15.add<bool>("switch", true);
-  psd15.add<double>("xmax", 100.0);
-  psd15.add<int>("NxBins", 100);
-  desc.add<edm::ParameterSetDescription>("DeltaY_primary", psd15);
-
-  edm::ParameterSetDescription psd16;
-  psd16.add<std::string>("name", "Pull_X_SimHitPrimary");
-  psd16.add<std::string>("title", "Pull_X_SimHitPrimary;pull x;");
-  psd16.add<double>("ymax", 4.0);
-  psd16.add<int>("NxBins", 82);
-  psd16.add<bool>("switch", true);
-  psd16.add<double>("xmax", 4.1);
-  psd16.add<double>("xmin", -4.1);
-  psd16.add<double>("ymin", -4.0);
-  desc.add<edm::ParameterSetDescription>("PullX_primary", psd16);
-
-  edm::ParameterSetDescription psd17;
-  psd17.add<std::string>("name", "Pull_Y_SimHitPrimary");
-  psd17.add<std::string>("title", "Pull_Y_SimHitPrimary;pull y;");
-  psd17.add<double>("ymax", 4.0);
-  psd17.add<int>("NxBins", 82);
-  psd17.add<bool>("switch", true);
-  psd17.add<double>("xmax", 4.1);
-  psd17.add<double>("xmin", -4.1);
-  psd17.add<double>("ymin", -4.0);
-  desc.add<edm::ParameterSetDescription>("PullY_primary", psd17);
-
-  edm::ParameterSetDescription psd18;
-  psd18.add<std::string>("name", "Delta_phi");
-  psd18.add<std::string>("title", "Delta Phi pixel;phi;");
-  psd18.add<int>("NxBins", 100);
-  psd18.add<bool>("switch", true);
-  psd18.add<double>("xmax", delta_phi_range);
-  psd18.add<double>("xmin", -delta_phi_range);
-  desc.add<edm::ParameterSetDescription>("Delta_Phi", psd18);
-
-  edm::ParameterSetDescription psd18b;
-  psd18b.add<std::string>("name", "Delta_Phi_Pixel_Barrel");
-  psd18b.add<std::string>("title", "Delta Phi pixel barrel;phi;");
-  psd18b.add<int>("NxBins", 100);
-  psd18b.add<bool>("switch", true);
-  psd18b.add<double>("xmax", delta_phi_range);
-  psd18b.add<double>("xmin", -delta_phi_range);
-  desc.add<edm::ParameterSetDescription>("Delta_Phi_barrel", psd18b);
-
-  edm::ParameterSetDescription psd18e;
-  psd18e.add<std::string>("name", "Delta_Phi_Pixel_Endcaps");
-  psd18e.add<std::string>("title", "Delta Phi pixel endcaps;phi;");
-  psd18e.add<int>("NxBins", 100);
-  psd18e.add<bool>("switch", true);
-  psd18e.add<double>("xmax", delta_phi_range);
-  psd18e.add<double>("xmin", -delta_phi_range);
-  desc.add<edm::ParameterSetDescription>("Delta_Phi_endcaps", psd18e);
+  phase2tkutil::add1DDesc(desc,
+                          "nRecHits_primary",
+                          "Num_RecHits_matched_primary_SimTrack",
+                          "Number of " + product_name + " matched to primary SimTrack in {}",
+                          "Number of rechits",
+                          "Number of events",
+                          100,
+                          0.0,
+                          1000.0);
 }
