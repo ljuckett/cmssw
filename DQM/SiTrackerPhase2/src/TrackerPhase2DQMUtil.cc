@@ -1,5 +1,22 @@
 #include "DQM/SiTrackerPhase2/interface/TrackerPhase2DQMUtil.h"
 
+const std::vector<std::string> barrelName = {"Barrel/", "Barrel "};
+const std::vector<std::string> endcapName = {"Endcaps/", "endcap "};
+const std::vector<std::string> fPixName = {"ForwardPix/", "FPix "};
+const std::vector<std::string> ePixName = {"EndcapPix/", "EPix "};
+const std::vector<std::string> OTMinusName = {"MINUS/", "side minus "};
+const std::vector<std::string> OTPlusName = {"PLUS/", "side plus "};
+const std::vector<std::string> OTTEDD1Name = {"TEDD_1/", "TEDD 1 "};
+const std::vector<std::string> OTTEDD2Name = {"TEDD_2/", "TEDD 2 "};
+const int nFPixWheels = 8;
+const int nEPixWheels = 4;
+const int nFPixRings = 4;
+const int nEPixRings = 5;
+const int nTEDD1Wheels = 2;
+const int nTEDD2Wheels = 3;
+const int nTEDD1Rings = 15;
+const int nTEDD2Rings = 12;
+
 // Unified folder getter for IT and OT
 // Gets the geographical information in either filepath or "pretty" format
 // Uses the LEVEL to figure out which information to include
@@ -18,28 +35,28 @@ std::string phase2tkutil::getHistoId(uint32_t det_id, const TrackerTopology* tTo
 
   if (DetId(det_id).subdetId() == PixelSubdetector::PixelBarrel ||
       DetId(det_id).subdetId() == SiStripSubdetector::TOB) {
-    Substructure = (pretty ? "Barrel " : "Barrel/");
+    Substructure = barrelName[pretty];
     if (inner)
       layer = tTopo->getITPixelLayerNumber(det_id);
     else
       layer = tTopo->getOTLayerNumber(det_id);
   } else if (DetId(det_id).subdetId() == PixelSubdetector::PixelEndcap ||
              DetId(det_id).subdetId() == SiStripSubdetector::TID) {
-    Substructure = (pretty ? "endcap " : "Endcaps/");
+    Substructure = endcapName[pretty];
     if (inner) {
       wheel = tTopo->pxfDisk(det_id);
       ring = tTopo->pxfBlade(det_id);
 
       if (wheel < 9)
-        Substructure.append(pretty ? "FPix " : "ForwardPix/");
+        Substructure.append(fPixName[pretty]);
       else
-        Substructure.append(pretty ? "EPix " : "EndcapPix/");
+        Substructure.append(ePixName[pretty]);
 
     } else {
       int side = tTopo->tidSide(det_id);
-      Side = (pretty ? ((side == 1) ? "side minus " : "side plus ") : ((side == 1) ? "MINUS/" : "PLUS/"));
+      Side = (side == 1 ? OTMinusName[pretty] : OTPlusName[pretty]);
       wheel = tTopo->tidWheel(det_id);
-      TEDD = (pretty ? (wheel < 3 ? "TEDD_1 " : "TEDD_2 ") : ((wheel < 3) ? "TEDD_1/" : "TEDD_2/"));
+      TEDD = (wheel < 3 ? OTTEDD1Name[pretty] : OTTEDD2Name[pretty]);
       ring = tTopo->tidRing(det_id);
     }
   } else {  //unknown subdetector - should probably throw
@@ -85,6 +102,67 @@ std::string phase2tkutil::getHistoId(uint32_t det_id, const TrackerTopology* tTo
       foldername << "Ring" << ring << (pretty ? " " : "/");
   }
   return foldername.str();
+}
+
+// Gets all possible folder names. Useful for validation/harvesting.
+std::vector<std::string> phase2tkutil::getAllFolders() {
+  std::vector<std::string> allFolders;
+  std::string folderName;
+  allFolders.push_back("");
+  // IT
+  const std::vector<std::string> shellNames = {"mO/", "mI/", "pO/", "pI/"};
+  allFolders.push_back(barrelName[0]);
+  allFolders.push_back(endcapName[0] + fPixName[0]);
+  allFolders.push_back(endcapName[0] + ePixName[0]);
+  for (int shell = 0; shell < 4; shell++) {
+    allFolders.push_back(barrelName[0] + shellNames[shell]);
+    for (int layer = 1; layer <= 4; layer++) {
+      allFolders.push_back(barrelName[0] + shellNames[shell] + "Layer" + std::to_string(layer) + "/");
+    }
+    for (int endcapStructure = 1; endcapStructure <= 2; endcapStructure++) {
+      for (int wheel = (endcapStructure == 1 ? 1 : nFPixWheels + 1);
+           wheel <= (endcapStructure == 1 ? nFPixWheels : nFPixWheels + nEPixWheels);
+           wheel++) {
+        allFolders.push_back(endcapName[0] + (endcapStructure == 1 ? fPixName[0] : ePixName[0]) + shellNames[shell] +
+                             "Wheel" + std::to_string(wheel) + "/");
+        for (int ring = 1; ring <= (endcapStructure == 1 ? nFPixRings : nEPixRings); ring++) {
+          allFolders.push_back(endcapName[0] + (endcapStructure == 1 ? fPixName[0] : ePixName[0]) + shellNames[shell] +
+                               "Wheel" + std::to_string(wheel) + "/Ring" + std::to_string(ring) + "/");
+        }
+      }
+      for (int ring = 1; ring <= (endcapStructure == 1 ? nFPixRings : nEPixRings); ring++) {
+        allFolders.push_back(endcapName[0] + (endcapStructure == 1 ? fPixName[0] : ePixName[0]) + shellNames[shell] +
+                             "Ring" + std::to_string(ring) + "/");
+      }
+    }
+  }
+
+  // OT
+  for (int layer = 1; layer <= 6; layer++) {
+    allFolders.push_back(barrelName[0] + "Layer" + std::to_string(layer) + "/");
+  }
+  allFolders.push_back(endcapName[0]);
+  for (int side = 1; side <= 2; side++) {
+    allFolders.push_back(endcapName[0] + (side == 1 ? OTMinusName[0] : OTPlusName[0]));
+    for (int tedd = 1; tedd <= 2; tedd++) {
+      for (int wheel = (tedd == 1 ? 1 : nTEDD1Wheels + 1);
+           wheel <= (tedd == 1 ? nTEDD1Wheels : nTEDD1Wheels + nTEDD2Wheels);
+           wheel++) {
+        allFolders.push_back(endcapName[0] + (side == 1 ? OTMinusName[0] : OTPlusName[0]) +
+                             (tedd == 1 ? OTTEDD1Name[0] : OTTEDD2Name[0]) + "Wheel" + std::to_string(wheel) + "/");
+        for (int ring = 1; ring <= (tedd == 1 ? nTEDD1Rings : nTEDD2Rings); ring++) {
+          allFolders.push_back(endcapName[0] + (side == 1 ? OTMinusName[0] : OTPlusName[0]) +
+                               (tedd == 1 ? OTTEDD1Name[0] : OTTEDD2Name[0]) + "Wheel" + std::to_string(wheel) +
+                               "/Ring" + std::to_string(ring) + "/");
+        }
+      }
+      for (int ring = 1; ring <= (tedd == 1 ? nTEDD1Rings : nTEDD2Rings); ring++) {
+        allFolders.push_back(endcapName[0] + (side == 1 ? OTMinusName[0] : OTPlusName[0]) +
+                             (tedd == 1 ? OTTEDD1Name[0] : OTTEDD2Name[0]) + "Ring" + std::to_string(ring) + "/");
+      }
+    }
+  }
+  return allFolders;
 }
 
 std::string phase2tkutil::getITShell(uint32_t det_id, const TrackerTopology* tTopo, float phi) {
