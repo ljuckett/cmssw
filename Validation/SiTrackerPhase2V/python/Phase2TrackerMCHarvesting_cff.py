@@ -56,6 +56,8 @@ Phase2OTTrackingRechitHarvester_2S=Phase2OTRechitHarvester_2S.clone(
 
 trackerphase2ValidationHarvesting = cms.Sequence(Phase2ITRechitHarvester
                                                  * Phase2ITtrackingrechitHarvester
+                                                 * Phase2OTRechitHarvester_PS
+                                                 * Phase2OTRechitHarvester_2S
                                                  * Phase2OTTrackingRechitHarvester_PS
                                                  * Phase2OTTrackingRechitHarvester_2S
                                                  * Phase2OTHarvestTracks
