@@ -8,7 +8,6 @@ hcalOfflineSourceSequence.remove(rawTask)
 
 siStripFEDCheck.RawDataTag = 'rawDataCollector'
 siStripFEDMonitor.RawDataTag = 'rawDataCollector'
-SiPixelHLTSource.RawInput = 'rawDataCollector'
 dqmCSCClient.InputObjects = 'rawDataCollector'
 dtDataIntegrityUnpacker.inputLabel = 'rawDataCollector'
 #l1tfed.rawTag = 'rawDataCollector'
