@@ -229,11 +229,16 @@ void Phase2ITMonitorCluster::bookHistograms(DQMStore::IBooker& ibooker,
 void Phase2ITMonitorCluster::bookLayerHistos(DQMStore::IBooker& ibooker, uint32_t det_id, std::string& subdir) {
   const GeomDet* geomDet = tkGeom_->idToDet(det_id);
   GlobalPoint detPos = geomDet->surface().toGlobal(Local2DPoint(0, 0));
+  bool HLTReco = config_.getParameter<bool>("HLTReco");
   for (enum Level bookingDepth = IT; bookingDepth <= LAYER; bookingDepth = Level(bookingDepth + 1)) {
     // Skip booking for barrel det_ids in endcap-only depths
     if ((bookingDepth == ENDCAP_RING || bookingDepth == ENDCAP_WHEEL) &&
         DetId(det_id).subdetId() == PixelSubdetector::PixelBarrel)
       continue;
+
+    // Skip deep booking for HLT
+    if (HLTReco && bookingDepth >= SHELL)
+	   continue; 
 
     std::string folderName = phase2tkutil::getHistoId(det_id, tTopo_, detPos.phi(), bookingDepth, false);
     std::string prettyName = phase2tkutil::getHistoId(det_id, tTopo_, detPos.phi(), bookingDepth, true);
@@ -459,6 +464,7 @@ void Phase2ITMonitorCluster::fillDescriptions(edm::ConfigurationDescriptions& de
                           2.5);
 
   desc.add<std::string>("TopFolderName", "InnerTracker");
+  desc.add<bool>("HLTReco", false);
   desc.add<edm::InputTag>("InnerPixelClusterSource", edm::InputTag("siPixelClusters"));
   descriptions.add("Phase2ITMonitorCluster", desc);
 }
