@@ -7,10 +7,13 @@ from DQM.SiTrackerPhase2.Phase2OTMonitorTTTrack_cfi import *
 from DQM.SiTrackerPhase2.Phase2OTMonitorTTStub_cff import *
 from DQM.SiTrackerPhase2.Phase2OTMonitorTTCluster_cfi import *
 
+from DQM.SiTrackerPhase2.Phase2CRACKMonitor_cfi import *
+
 trackerphase2DQMSource = cms.Sequence(  CRACKDigiMon
                                        + clusterMonitorCRACK
                                        + Phase2OTMonitorTTCluster
                                        + TTStubMonitorCRACK
+                                       + Phase2CRACKMonitor
                                        + Phase2OTMonitorTTTrack
 )
 
