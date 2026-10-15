@@ -29,5 +29,10 @@ TTStubMonitorCRACK = Phase2OTMonitorTTStub.clone(
         xmax = cms.double(70.0),
         ymin = cms.double(-0.0),
         ymax = cms.double(60.0)
+    ),
+    NStubsLayer = Phase2OTMonitorTTStub.NStubsLayer.clone(
+        xmax = cms.double(60.5),
+        xmin = cms.double(0.5),
+        NxBins = cms.int32(60)
     )
 )

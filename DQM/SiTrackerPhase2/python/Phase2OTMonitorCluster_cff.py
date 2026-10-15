@@ -57,8 +57,9 @@ clusterMonitorCRACK = Phase2OTMonitorCluster.clone(
         ymax = cms.double(60.0)
     ),
     NClustersLayer_S = Phase2OTMonitorCluster.NClustersLayer_S.clone(
-        xmax = cms.double(50.0),
-        NxBins = cms.int32(50)
+        xmax = cms.double(50.5),
+        xmin = cms.double(-0.5),
+        NxBins = cms.int32(51)
     )
     #clusterSrc = cms.InputTag('siPhase2Clusters'),
 )
